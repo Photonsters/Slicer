@@ -55,6 +55,7 @@ If you don't see a progress window and now file is added to 'C:/Program Files/Ph
 
 ## Command Line Parameters
 
+```
 usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
                        [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
                        [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
@@ -93,6 +94,6 @@ optional arguments:
                         off time between layers (sec)
   -g GUI, --gui GUI     show progress in popup window
 
-
+```
 
 
