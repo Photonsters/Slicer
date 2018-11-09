@@ -4,10 +4,10 @@ The PhotonSlicer Converts STL (binary) files to Images or PhotonFile. It is prog
 
 ---
 
-# Status
+## Status
 
 Not yet ready:
-- PhotonSlicer was optimized for speed using Cython. The install packages need to be rebuild and are not yet available. 
+- PhotonSlicer was optimized for speed using Cython. The install packages need to be rebuild and are not yet available.
 - Real life test with the produced photon files have to be done.
 
 ---
@@ -62,7 +62,6 @@ If you don't see a progress window and now file is added to 'C:/Program Files/Ph
 ---
 
 ## Command Line Parameters
-
 ```
 usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
                        [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
@@ -71,12 +70,12 @@ usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
 
 required: stlfilename
 
-examples: PhotonSlicer.cmd -s ./STLs/Cube.stl                         -> ./STLs/Cube.photon
-          PhotonSlicer.cmd -s ./STLs/Cube.stl -p photon -l 0.05       -> ./STLs/Cube.photon
-          PhotonSlicer.cmd -s ./STLs/Cube.stl -p /home/photon -l 0.05 -> /home/Cube.photon
-          PhotonSlicer.cmd -s ./STLs/Cube.stl -p /Sqrs.photon -l 0.05 -> /Sqrs.photon
-          PhotonSlicer.cmd -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..
-          PhotonSlicer.cmd -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..
+examples: PhotonSlicer.exe -s ./STLs/Cube.stl                         -> ./STLs/Cube.photon
+          PhotonSlicer.exe -s ./STLs/Cube.stl -p photon -l 0.05       -> ./STLs/Cube.photon
+          PhotonSlicer.exe -s ./STLs/Cube.stl -p /home/photon -l 0.05 -> /home/Cube.photon
+          PhotonSlicer.exe -s ./STLs/Cube.stl -p /Sqrs.photon -l 0.05 -> /Sqrs.photon
+          PhotonSlicer.exe -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..
+          PhotonSlicer.exe -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -101,7 +100,7 @@ optional arguments:
   -o OFFTIME, --offtime OFFTIME
                         off time between layers (sec)
   -g GUI, --gui GUI     show progress in popup window
-
 ```
+
 
 
