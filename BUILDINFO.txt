@@ -1,0 +1,6 @@
+1) run guisetup
+2) DON'T CLEAN bdist.win32 or exe.win32-3.6
+3) run consetup
+
+The ...GUI...msi can be run without displaying a console window
+The ...Console...msi will always need a console window, but can direct its output to the console '-g False' or to the GUI '-g True'

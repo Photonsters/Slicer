@@ -1,0 +1,53 @@
+Slicing Test Case:
+    linux
+    nard@DeepSpace9:~/PhotonSlicer$     python3 PhotonSlicer.py -s STLs/legocog.stl -r 1 -l 0.5
+
+Full:       11.6 sec
+Excl Load:  10.6 sec
+No Encode:  11.3 sec
+No Fill:    10.9 sec
+
+Cython triInSlice 8.2 sec (if we abort triInSlice in first line, time stays 8.2 sec)
+Cython triInSlice 7.4 sec (after some optimization in Stl2Slices)
+Cython triInSlice 7.0 sec (after making tri lists per slice)
+Draw to a 24 bit img 7.4 sec
+Draw to a 8 bit img  5.1 sec
+No fills if normal is up/down 4.0 sec
+
+
+Slicing Test Case:
+    linux
+    nard@DeepSpace9:~/PhotonSlicer$     python3 PhotonSlicer.py -s STLs/3DBenchy.stl -r 1 -l 0.1
+
+Cython triInSlice 462 sec (after some optimization in Stl2Slices)
+Cython triInSlice 74 sec (after making tri lists per slice)
+24 bit img 74 sec
+8 bit img  56 sec
+No fills if normal is up/down 56 sec
+
+
+
+==============================================================================================
+Encoding Test Case:
+    linux
+    nard@DeepSpace9:~/PhotonSlicer$     python3 PhotonSlicer.py -s STLs/bunny.stl -r 0.5 -l 1
+
+Full:       10 sec
+No fill:    10 sec
+No Rotate:  10 sec (in encode we rotate 90deg)
+No Encode:   1.1 sec
+
+Encode:    numpy-code 0,14 sec
+           reps-code  0,02 sec
+
+
+No Encode:               1.1 sec
+Cython (no numpy):       7 sec
+Cython (w/ numpy):       8.1 sec
+Cython (nonumpy1D):      5.0 sec
+Cython (nonumpy1DBlock): 4.6 sec
+Cython (withnumpy2):      7.9 sec
+Cython (numpy1DBlock):    1.4 sec
+
+
+
