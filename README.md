@@ -3,6 +3,14 @@
 The PhotonSlicer Converts STL (binary) files to Images or PhotonFile. It is programmed in Python 3 and uses OpenCV and numpy.
 
 ---
+
+# Status
+
+Not yet ready:
+- PhotonSlicer was optimized for speed using Cython. The install packages need to be rebuild and are not yet available. 
+- Real life test with the produced photon files have to be done.
+
+---
   
 ## Installation
 
