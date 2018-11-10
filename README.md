@@ -8,8 +8,8 @@ The PhotonSlicer Converts STL (binary) files to Images or PhotonFile. It is prog
 
 Not yet ready:
 - PhotonSlicer was optimized for speed using Cython. Currently it is about 3x slower than Anycubic Photon Slicer.
-- The install packages are rebuild but very large due to unnecessary numpy.core dll's. Find a to exclude these from package.
-- Real life test with the produced photon files have to be done.
+- The install packages are rebuild but very large due to unnecessary numpy.core dll's. Need to find a way to exclude these from package.
+- Real life test with the produced photon files is necessary.
 
 ---
   
