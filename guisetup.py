@@ -9,9 +9,11 @@
 #  
 # OR make exe directory to zip
 # 
-# python guisetup.py build -b ..\  install_exe -d ..\
+# 1) python guisetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
+# 
+# 2) move from root of install dir tcl86t.dll and  tk86t.dll to libs folder
 #
-# Following files are large and not necessary:
+# 3) Following files are large and not necessary:
 #           ["numpy/core/mkl_avx.dll",
 #            "numpy.core.mkl_avx2.dll",
 #            "numpy.core.mkl_avx512.dll",
@@ -26,22 +28,13 @@
 #            "numpy.core.mkl_vml_mc.dll",
 #            "numpy.core.mkl_vml_mc2.dll",
 #            "numpy.core.mkl_vml_mc3.dll",
+#            "numpy.core.mkl_vml_def.dll"
 #            "numpy.core.mkl_sequential.dll",
 #            "numpy.core.svml_dispmd.dll"
-#            "numpy.core.libopenblas.dll],
+#            "numpy.core.libopenblas.dll",
+#            ]
 #            
-# Following libs are not needed
-#        email
-#        html
-#        httpsjson
-#        json
-#        urllib
-#        xml
-#        xmlrpc
-#        setuptools
-#        pydoc_data
-#
-# Resulting zip is 125MB
+# 4) 7-Zip file - Resulting .7Z is 64MB
 #
 ################################
 
