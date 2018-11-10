@@ -1,6 +1,23 @@
-1) run guisetup
-2) DON'T CLEAN bdist.win32 or exe.win32-3.6
-3) run consetup
+Python 3.7 does not work yet with cx_Freeze!
+
+0) setup python:
+    - Use Python3.6 (amd64 for 64 bits systems; 
+    - Install cython, numpy, opencv, cx_freeze using 
+        pip install ... --user
+            or 
+        download wheels for P3.6 and amd64 on:    
+          https://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv
+          pip install ...
+
+1) recompile RLE and TIS lib, see instruction in compileRLE.py and compileTIS.py
+
+2) test environment by testing with
+    go to PhotonSlicer source directory
+    python PhotonSlicer.py --help
+
+3) run guisetup
+4) DON'T CLEAN bdist.win32 or exe.win32-3.6
+5) run consetup
 
 The ...GUI...msi can be run without displaying a console window
 The ...Console...msi will always need a console window, but can direct its output to the console '-g False' or to the GUI '-g True'
