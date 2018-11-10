@@ -4,8 +4,44 @@
 #
 ################################
 #
-#just build	    	python guisetup.py build -b ..\				            #Builds on the folder above
-#build installer    python guisetup.py build -b ..\  bdist_msi -d ..\		#Builds on the folder above
+# just build	    	python guisetup.py build -b ..\				            #Builds on the folder above
+# build installer    python guisetup.py build -b ..\  bdist_msi -d ..\		#Builds on the folder above
+#  
+# OR make exe directory to zip
+# 
+# python guisetup.py build -b ..\  install_exe -d ..\
+#
+# Following files are large and not necessary:
+#           ["numpy/core/mkl_avx.dll",
+#            "numpy.core.mkl_avx2.dll",
+#            "numpy.core.mkl_avx512.dll",
+#            "numpy.core.mkl_avx512_mic.dll",
+#            "numpy.core.mkl_mc.dll",
+#            "numpy.core.mkl_mc2.dll",
+#            "numpy.core.mkl_mc3.dll",
+#            "numpy.core.vml_avx.dll",
+#            "numpy.core.vml_avx2.dll",
+#            "numpy.core.vml_avx512.dll",
+#            "numpy.core.vml_avx512_mic.dll",
+#            "numpy.core.mkl_vml_mc.dll",
+#            "numpy.core.mkl_vml_mc2.dll",
+#            "numpy.core.mkl_vml_mc3.dll",
+#            "numpy.core.mkl_sequential.dll",
+#            "numpy.core.svml_dispmd.dll"
+#            "numpy.core.libopenblas.dll],
+#            
+# Following libs are not needed
+#        email
+#        html
+#        httpsjson
+#        json
+#        urllib
+#        xml
+#        xmlrpc
+#        setuptools
+#        pydoc_data
+#
+# Resulting zip is 125MB
 #
 ################################
 
@@ -42,43 +78,9 @@ bdist_msi_options = {'data': msi_data}
 # build_exe_options = {"packages": ["os", "numpy"],"include_files": [""], "include_msvcr" : True}
 PYTHON_INSTALL_DIR = os.path.dirname(os.path.dirname(os.__file__))
 
-"""
-Following files are large and not necessary:
-           ["numpy/core/mkl_avx.dll",
-            "numpy.core.mkl_avx2.dll",
-            "numpy.core.mkl_avx512.dll",
-            "numpy.core.mkl_avx512_mic.dll",
-            "numpy.core.mkl_mc.dll",
-            "numpy.core.mkl_mc2.dll",
-            "numpy.core.mkl_mc3.dll",
-            "numpy.core.vml_avx.dll",
-            "numpy.core.vml_avx2.dll",
-            "numpy.core.vml_avx512.dll",
-            "numpy.core.vml_avx512_mic.dll",
-            "numpy.core.mkl_vml_mc.dll",
-            "numpy.core.mkl_vml_mc2.dll",
-            "numpy.core.mkl_vml_mc3.dll",
-            "numpy.core.svml_dispmd.dll"],
-"""
-
 build_exe_options = {
 					"packages": ["os", "numpy"],
 					"include_msvcr" : True,
-                    "bin_excludes":["mkl_avx.dll",
-                                    "mkl_avx2.dll",
-                                    "mkl_avx512.dll",
-                                    "mkl_avx512_mic.dll",
-                                    "mkl_mc.dll",
-                                    "mkl_mc2.dll",
-                                    "mkl_mc3.dll",
-                                    "vml_avx.dll",
-                                    "vml_avx2.dll",
-                                    "vml_avx512.dll",
-                                    "vml_avx512_mic.dll",
-                                    "mkl_vml_mc.dll",
-                                    "mkl_vml_mc2.dll",
-                                    "mkl_vml_mc3.dll",
-                                    "svml_dispmd.dll"],
 					"excludes":[""],
 					"include_files":[
 									os.path.join(PYTHON_INSTALL_DIR,'DLLs','tcl86t.dll'), 
