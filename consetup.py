@@ -13,7 +13,7 @@ import os
 import sys
 from cx_Freeze import setup, Executable
 import numpy
-#import tkinter
+import tkinter
 
 shortcut_table = [
     ("DesktopShortcut",			# Shortcut

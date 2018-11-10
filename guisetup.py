@@ -81,7 +81,7 @@ PYTHON_INSTALL_DIR = os.path.dirname(os.path.dirname(os.__file__))
 build_exe_options = {
 					"packages": ["os", "numpy"],
 					"include_msvcr" : True,
-					"excludes":[""],
+					"excludes":["email","html","https","json","json","urllib","xml","xmlrpc","setuptools","pydoc_data"],
 					"include_files":[
 									os.path.join(PYTHON_INSTALL_DIR,'DLLs','tcl86t.dll'), 
 									os.path.join(PYTHON_INSTALL_DIR,'DLLs','tk86t.dll'),

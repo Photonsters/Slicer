@@ -1,0 +1,5 @@
+usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
+                       [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
+                       [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
+                       [-g GUI]
+

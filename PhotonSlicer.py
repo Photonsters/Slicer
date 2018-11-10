@@ -1,5 +1,6 @@
 """
 Needed (external) packages by other modules
+ cython
  numpy
  opencv-python
 
@@ -69,6 +70,7 @@ def is_bool(arg):
 def is_valid_file(arg):
     global stlfilename
     arg=os.path.normpath(arg) # convert all / to \ for windows and vv for linux
+    arg=os.path.abspath(arg)
     if not os.path.isfile(arg):
         raise argparse.ArgumentTypeError("stlfilename argument ('"+arg+"') does not point to valid STL file")
     elif not arg[-4:].lower()==".stl":
@@ -249,6 +251,19 @@ normalexposure = float(args["exposure"])
 bottomexposure = float(args["bottomexposure"])
 bottomlayers = int(args["bottomlayers"])
 offtime = float(args["offtime"])
+
+# For tkinter to be found in frozen state (exe/cx_freeze) we must run script in installation dir
+# Change to directory of script
+if getattr(sys, 'frozen', False):
+    # frozen
+    filedir = os.path.dirname(sys.executable)
+else:
+    # unfrozen
+    filedir = os.path.dirname(os.path.realpath(__file__))
+cwd=os.getcwd()
+abspath = os.path.abspath(filedir)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 
 S2I=Stl2Slices(stlfilename=stlfilename,
                outputpath=outputpath,
