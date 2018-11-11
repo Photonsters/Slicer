@@ -33,13 +33,13 @@ For Linux/MeshMixer user: Since there is only a Windows install file for MeshMix
 7. Fill fields as follows: 
     - Manufacturer: 'Anycubic'
     - Model: 'Photon - MC Rapid Clear' or append your own resin brand/type names
-    - Width: '115.00'
-    - Depth: '65.00'
+    - Width: '65.00'
+    - Depth: '115.00'
     - Height: '155.00'
     - Printer software name : 'Photon Slicer'
     - Printer software path : 'C:/Program Files/PhotonSlicer/PhotonSlicer.exe'
     - Format of file to ... : 'STL'
-    - Command line artuments: '-g True -l 0.05 -o 6 -t 8 -be 90 -bl 8 -p "C:/Program Files/PhotonSlicer/STLs/photon" -s'      
+    - Command line artuments: '-g True -e folder -l 0.05 -o 6 -t 8 -be 90 -bl 8 -p "C:/Program Files/PhotonSlicer/STLs/photon" -s'      
 8. Close window 'Printer Properties'
 9. Close window 'Preferences'
 
