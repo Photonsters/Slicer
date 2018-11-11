@@ -15,11 +15,11 @@ Not yet ready:
   
 ## Installation
 
-It has two install files:'PhotonSlicer_Console...msi' with a Command Line Interface and 'PhotonSlicer_GUI...msi' with a graphical interface. The last one is most suitable as plugin for MeshMixer. 
+It has two install folders: 'Console/' with a Command Line Interface and 'Win64/' with a graphical interface. The last one is most suitable as plugin for MeshMixer. Both contain split zip archives.
 
-For Windows an easy install package is available. For Linux and OSX you have to install python and some libraries. 
+For Linux and OSX you have to install python and some libraries (cython, numpy, open-cv). 
 
-For Linux/MeshMixer user: Since there is only a Windows install file for MeshMixer you should already have wine up and running. So install PhotonSlicer in Wine too. 
+For Linux/MeshMixer user: You should already have wine up and running to use MeshMixer. Also install the Win64/ Zip files for PhotonSlicer in Wine. 
 
 ---
 
