@@ -11,27 +11,29 @@
 # 
 # 1) python guisetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
 # 
-# 2) move from root of install dir tcl86t.dll and  tk86t.dll to libs folder
+# 2) in .build move tcl86t.dll/tk86t.dll from install rootdir to libs folder
 #
-# 3) Following files are large and not necessary:
-#           ["numpy/core/mkl_avx.dll",
-#            "numpy.core.mkl_avx2.dll",
-#            "numpy.core.mkl_avx512.dll",
+# 3) following files (in order of size) are large and not necessary:
+#           [
 #            "numpy.core.mkl_avx512_mic.dll",
-#            "numpy.core.mkl_mc.dll",
-#            "numpy.core.mkl_mc2.dll",
+#            "numpy.core.mkl_avx512.dll",
+#            "numpy.core.mkl_avx2.dll",
+#            "numpy/core/mkl_avx.dll",
+#            "numpy.core.libopenblas.dll",
 #            "numpy.core.mkl_mc3.dll",
+#            "numpy.core.mkl_mc.dll",
+#
+#            "numpy.core.svml_dispmd.dll"
+#            "numpy.core.mkl_sequential.dll",
+#
+#            "numpy.core.vml_avx512.dll",
 #            "numpy.core.vml_avx.dll",
 #            "numpy.core.vml_avx2.dll",
-#            "numpy.core.vml_avx512.dll",
 #            "numpy.core.vml_avx512_mic.dll",
 #            "numpy.core.mkl_vml_mc.dll",
-#            "numpy.core.mkl_vml_mc2.dll",
 #            "numpy.core.mkl_vml_mc3.dll",
+#            "numpy.core.mkl_vml_mc2.dll",
 #            "numpy.core.mkl_vml_def.dll"
-#            "numpy.core.mkl_sequential.dll",
-#            "numpy.core.svml_dispmd.dll"
-#            "numpy.core.libopenblas.dll",
 #            ]
 #            
 # 4) 7-Zip file - Resulting .7Z is 64MB
@@ -74,7 +76,7 @@ PYTHON_INSTALL_DIR = os.path.dirname(os.path.dirname(os.__file__))
 build_exe_options = {
 					"packages": ["os", "numpy"],
 					"include_msvcr" : True,
-					"excludes":["email","html","https","json","json","urllib","xml","xmlrpc","setuptools","pydoc_data"],
+					"excludes":["email","html","https","json","urllib","xml","xmlrpc","setuptools","pydoc_data"],
 					"include_files":[
 									os.path.join(PYTHON_INSTALL_DIR,'DLLs','tcl86t.dll'), 
 									os.path.join(PYTHON_INSTALL_DIR,'DLLs','tk86t.dll'),

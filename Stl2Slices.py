@@ -545,7 +545,7 @@ class Stl2Slices:
                     progress=100*sliceNr/nrSlices
                     self.progress_var.set(progress)
                 except Exception:
-                    None
+                    sys.exit() # quit() does not work if we make this an exe with cx_Freeze
 
         if not self.gui: print () # close progress stdout and go to new line
 
