@@ -25,7 +25,7 @@ For Linux/MeshMixer user: You should already have wine up and running to use Mes
 
 ## Setup MeshMixer
 1. Install MeshMixer (Linux users: First install Wine and install MeshMixer in Wine)
-2. Download and unpack the zips (use 7-zip) in /Win64 to a location on your computer e.g. C:/Program Files/PhotonSlicer/
+2. Download and unpack the zips in /Win64 (use 7-zip) to a location on your computer e.g. C:/Program Files/PhotonSlicer/
 3. Open MeshMixer
 4. Go to menu File > Preferences (Alt-T)
 5. Go to tab Printers
