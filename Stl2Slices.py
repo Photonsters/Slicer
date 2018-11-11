@@ -540,9 +540,12 @@ class Stl2Slices:
 
             # Update GUI progress bar if gui active
             if self.gui:
-                self.popup.update()
-                progress=100*sliceNr/nrSlices
-                self.progress_var.set(progress)
+                try: # Check if user aborted/closed window
+                    self.popup.update()
+                    progress=100*sliceNr/nrSlices
+                    self.progress_var.set(progress)
+                except Exception:
+                    None
 
         if not self.gui: print () # close progress stdout and go to new line
 

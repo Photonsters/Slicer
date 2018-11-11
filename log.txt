@@ -3,3 +3,51 @@ usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
                        [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
                        [-g GUI]
 
+
+---------------------------
+2018-11-11 09:21:54
+usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
+                       [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
+                       [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
+                       [-g GUI] [-e EXECUTE]
+
+Traceback (most recent call last):
+  File "PhotonSlicer.py", line 235, in <module>
+    args = vars(ap.parse_args())
+  File "/usr/lib/python3.6/argparse.py", line 1746, in parse_args
+    self.error(msg % ' '.join(argv))
+  File "/usr/lib/python3.6/argparse.py", line 2400, in error
+    self.print_usage(_sys.stderr)
+  File "/usr/lib/python3.6/argparse.py", line 2370, in print_usage
+    self._print_message(self.format_usage(), file)
+  File "PhotonSlicer.py", line 161, in _print_message
+    raise Exception(message)
+Exception: usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
+                       [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
+                       [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
+                       [-g GUI] [-e EXECUTE]
+
+
+---------------------------
+2018-11-11 09:22:01
+usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
+                       [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
+                       [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
+                       [-g GUI] [-e EXECUTE]
+
+Traceback (most recent call last):
+  File "PhotonSlicer.py", line 235, in <module>
+    args = vars(ap.parse_args())
+  File "/usr/lib/python3.6/argparse.py", line 1746, in parse_args
+    self.error(msg % ' '.join(argv))
+  File "/usr/lib/python3.6/argparse.py", line 2400, in error
+    self.print_usage(_sys.stderr)
+  File "/usr/lib/python3.6/argparse.py", line 2370, in print_usage
+    self._print_message(self.format_usage(), file)
+  File "PhotonSlicer.py", line 161, in _print_message
+    raise Exception(message)
+Exception: usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
+                       [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
+                       [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
+                       [-g GUI] [-e EXECUTE]
+

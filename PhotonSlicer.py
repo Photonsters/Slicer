@@ -226,7 +226,11 @@ ap.add_argument("-o", "--offtime", required=False,
 ap.add_argument("-g", "--gui", required=False,
                 default=6.5,type=is_bool,
                 help="show progress in popup window")
-    
+ap.add_argument("-e", "--execute", required=False,
+                help="execute command when done \n"+
+                     "'photon' will be replace with output filename \n"+
+                     "if argument is 'folder' a file browser will open")
+
 args = vars(ap.parse_args())
 
 # Check photonfilename is valid only now (that we have stlfilename)
@@ -250,6 +254,7 @@ normalexposure = float(args["exposure"])
 bottomexposure = float(args["bottomexposure"])
 bottomlayers = int(args["bottomlayers"])
 offtime = float(args["offtime"])
+linkedcmd = args["execute"]
 
 S2I=Stl2Slices(stlfilename=stlfilename,
                outputpath=outputpath,
@@ -262,3 +267,30 @@ S2I=Stl2Slices(stlfilename=stlfilename,
                offtime=offtime,
                gui=gui
                )
+
+"""
+Test on linux using:
+python3 PhotonSlicer.py -s STLs/bunny.stl -r 0.5 -l 0.1 
+        -e "wine ~/.wine/drive_c/Program\ Files/ANYCUBIC\ Photon\ Slicer64/ANYCUBIC\ Photon\ Slicer.exe /home/nard/PhotonSlicer/photon"
+"""
+import subprocess
+import platform
+import os
+def open_folder(path):
+    if platform.system() == 'Darwin':
+        subprocess.Popen(['open', path])
+        #os.startfile(path)
+    elif platform.system() == 'Linux':
+        subprocess.Popen(['xdg-open', path])
+        #os.startfile(path)
+    elif platform.system() == 'Windows':
+        os.startfile(path)
+        #os.startfile(path)
+
+if not linkedcmd==None:
+    linkedcmd=linkedcmd.replace("photon",outputfile)
+    os.system(linkedcmd)
+
+    if linkedcmd=="folder":
+        folderpath=os.path.dirname(outputfile)
+        open_folder(path=folderpath)  # open current directory
