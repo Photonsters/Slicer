@@ -19,13 +19,13 @@ It has two install folders: 'Console/' with a Command Line Interface and 'Win64/
 
 For Linux and OSX you have to install python and some libraries (cython, numpy, open-cv). 
 
-For Linux/MeshMixer user: You should already have wine up and running to use MeshMixer. Also install the Win64/ Zip files for PhotonSlicer in Wine. 
+For Linux/MeshMixer user: You should already have wine up and running to use MeshMixer. You should install the Win64/ Zip files for PhotonSlicer in Wine too. 
 
 ---
 
 ## Setup MeshMixer
 1. Install MeshMixer (Linux users: First install Wine and install MeshMixer in Wine)
-2. Download and unpack the zips in /Win64 to a location on your computer e.g. C:/Program Files/PhotonSlicer/
+2. Download and unpack the zips (use 7-zip) in /Win64 to a location on your computer e.g. C:/Program Files/PhotonSlicer/
 3. Open MeshMixer
 4. Go to menu File > Preferences (Alt-T)
 5. Go to tab Printers
