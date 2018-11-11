@@ -25,7 +25,7 @@ For Linux/MeshMixer user: Since there is only a Windows install file for MeshMix
 
 ## Setup MeshMixer
 1. Install MeshMixer (Linux users: First install Wine and install MeshMixer in Wine)
-2. Download and install 'PhotonSlicer_GUI...msi' to e.g. C:/Program Files/PhotonSlicer/
+2. Download and unpack the zips in /Win64 to a location on your computer e.g. C:/Program Files/PhotonSlicer/
 3. Open MeshMixer
 4. Go to menu File > Preferences (Alt-T)
 5. Go to tab Printers
@@ -70,6 +70,7 @@ If you don't see a progress window and now file is added to 'C:/Program Files/Ph
     - Josef Prusa - FDM: https://www.youtube.com/watch?v=OXFKVmMwXCQ
 6. Press 'Print' icon on bottom of left toolbar. A progress windows appears.
 7. The folder with your photon file opens
+
 ---
 
 ## Functionality under development
