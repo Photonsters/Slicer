@@ -101,6 +101,11 @@ optional arguments:
   -o OFFTIME, --offtime OFFTIME
                         off time between layers (sec)
   -g GUI, --gui GUI     show progress in popup window
+  -e EXECUTE, --execute EXECUTE
+                        execute command when done 
+                        'photon' will be replace with output filename 
+                        if argument is 'folder' a file browser will open
+
 ```
 
 
