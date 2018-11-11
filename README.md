@@ -56,6 +56,14 @@ If you don't see a progress window and now file is added to 'C:/Program Files/Ph
 
 ---
 
+## MeshMixer Full Workflow 
+Lattice infill: https://www.youtube.com/watch?v=ffmg1E3m1Ak&t=375s
+Honeycomb infill: https://www.youtube.com/watch?v=KDKlAf8pC4c&t=32s
+Hollow: https://www.youtube.com/watch?v=dC_nPqJFQbY
+Supports: https://www.youtube.com/watch?v=OXFKVmMwXCQ
+
+---
+
 ## Functionality under development
 - The main focus is speed.
 - Since PhotonSlicer was mainly meant as a plugin, mesh editing (hollowing/infill/positioning) will not be developed. Use the functionality of MeshMixer instead!
