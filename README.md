@@ -46,7 +46,7 @@ For Linux/MeshMixer user: Since there is only a Windows install file for MeshMix
 You can add an extra 'printer' for each resin / settings combo you need.
 
 
-## Use MeshMixer
+## Use MeshMixer to Slice
 1. Open an STL file, check if fits the build volume and is not below it.
 2. Press 'Print' icon on bottom of left toolbar.
 3. A progress windows appears.
@@ -54,13 +54,18 @@ You can add an extra 'printer' for each resin / settings combo you need.
 
 If you don't see a progress window and now file is added to 'C:/Program Files/PhotonSlicer/STLs/photon' check 'C:/Program Files/PhotonSlicer/log.txt' for error messages.
 
----
 
 ## MeshMixer Full Workflow 
-Lattice infill: https://www.youtube.com/watch?v=ffmg1E3m1Ak&t=375s
-Honeycomb infill: https://www.youtube.com/watch?v=KDKlAf8pC4c&t=32s
-Hollow: https://www.youtube.com/watch?v=dC_nPqJFQbY
-Supports: https://www.youtube.com/watch?v=OXFKVmMwXCQ
+1. Hollow in MeshMixer
+    - The Hot End - https://www.youtube.com/watch?v=dC_nPqJFQbY
+    - Model3D - https://www.youtube.com/watch?v=ZXu6VYj4Um0
+2. Infill in MeshMixer
+    - Maker's Muse - https://www.youtube.com/watch?v=ffmg1E3m1Ak&t=375s
+3. Orientation - Principles using Anycubic Photon Slicer
+    - All About 3D Blog - https://www.youtube.com/watch?v=7eZWHUOhoAw 
+4. Supports in MeshMixer
+    - MeshMixer - https://www.youtube.com/watch?v=aFTyTV3wwsE
+    - Josef Prusa - FDM: https://www.youtube.com/watch?v=OXFKVmMwXCQ
 
 ---
 
