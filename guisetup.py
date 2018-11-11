@@ -11,7 +11,7 @@
 # 
 # 1) python guisetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
 # 
-# 2) in .build move tcl86t.dll/tk86t.dll from install rootdir to libs folder
+# 2) in .build move all dlls (tcl86t.dll,tk86t.dll,VCRUNTIME140.dll,python36.dll) from install rootdir to libs folder
 #
 # 3) following files (in order of size) are large and not necessary:
 #           [
