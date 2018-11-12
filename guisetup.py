@@ -41,6 +41,7 @@
 # 5) 7-Zip file - Resulting .7Z is 53MB
 #
 # Diff between Con and GUI is PhotonSlicer.exe and lib/library.zip 
+# But only exchanging PhotonSlicer.Exe for Console version is enough to make it work.
 #
 ################################
 
