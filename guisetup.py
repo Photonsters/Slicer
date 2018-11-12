@@ -38,7 +38,9 @@
 #
 # 4) Remove all stl's except bunny.stl and cog.stl
 #            
-# 4) 7-Zip file - Resulting .7Z is 53MB
+# 5) 7-Zip file - Resulting .7Z is 53MB
+#
+# Diff between Con and GUI is PhotonSlicer.exe and lib/library.zip 
 #
 ################################
 
