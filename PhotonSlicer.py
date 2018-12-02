@@ -202,12 +202,12 @@ def is_valid_output(arg):
         raise argparse.ArgumentTypeError("photonfilename argument not valid")
 
 # Rewrite argparse _print_message to it prints using the print command
+sys.tracebacklimit = 0
 class argparse_logger(argparse.ArgumentParser):
-    def _print_message(self,message,stderr):
+    def _print_message(self,message,stderr):        
         print (message)
-        sys.tracebacklimit = None
-        raise Exception(message)
-        sys.tracebacklimit = 0
+        #raise Exception(message)
+        #pass         
 
 # If we are in GUI we want to output all prints to log.txt
 import sys
@@ -230,17 +230,18 @@ if gui:
 # construct the argument parse and parse the arguments
 ap = argparse_logger(description=
 #ap = argparse.ArgumentParser(description=
-                             "version    : October 28, 2018 \n" +
+                             "version    : December 2, 2018 \n" +
                              #"0123456789001234567890012345678900123456789001234567890012345678900123456789001234567890\n"+
-                             "description: Slices a STL (binary file) to images or a photon file.\n"
+                             "description: Slices a STL (binary) or Slic3r SVG file to images or a photon file.\n"
                              "\n"+
-                             "examples: PhotonSlicer.cmd -s ./STLs/Cube.stl                         -> ./STLs/Cube.photon\n"
-                             "          PhotonSlicer.cmd -s ./STLs/Cube.svg                         -> ./STLs/Cube.photon\n"
-                             "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p photon -l 0.05       -> ./STLs/Cube.photon\n"
-                             "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p /home/photon -l 0.05 -> /home/Cube.photon\n"
-                             "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p /Sqrs.photon -l 0.05 -> /Sqrs.photon\n"
-                             "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..\n"
-                             "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..\n"
+                             "examples: PhotonSlicer.exe -s ./STLs/Cube.stl                         -> ./STLs/Cube.photon\n"
+                             "          PhotonSlicer.exe -s ./STLs/Cube.svg                         -> ./STLs/Cube.photon\n"
+                             "          PhotonSlicer.exe -s ./STLs/Cube.stl -p photon -l 0.05       -> ./STLs/Cube.photon\n"
+                             "          PhotonSlicer.exe -s ./STLs/Cube.stl -p /home/photon -l 0.05 -> /home/Cube.photon\n"
+                             "          PhotonSlicer.exe -s ./STLs/Cube.stl -p /Sqrs.photon -l 0.05 -> /Sqrs.photon\n"
+                             "          PhotonSlicer.exe -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..\n"
+                             "          PhotonSlicer.exe -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..\n"
+                             "          PhotonSlicer.exe -s dialog -p dialog -g True -f False    -> full GUI is used\n"
                              ,formatter_class=argparse.RawTextHelpFormatter)
 
 ap.add_argument("-s","--filename",
@@ -259,8 +260,6 @@ ap.add_argument("-p","--photonfilename",
 ap.add_argument("-l","--layerheight",
                 default=0.05,type=float,
                 help="layer height in mm")
-
-
 ap.add_argument("-r", "--rescale", type=float, required=False,
                 help="scales model and offset")
 ap.add_argument("-t", "--exposure", required=False,
@@ -285,8 +284,8 @@ ap.add_argument("-e", "--execute", required=False,
                 help="execute command when done \n"+
                      "'photon' will be replace with output filename \n"+
                      "if argument is 'folder' a file browser will open")
-
 args = vars(ap.parse_args())
+
 
 # Check photonfilename is valid only now (that we have filename)
 sf=(args["filename"])
