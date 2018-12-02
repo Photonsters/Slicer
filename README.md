@@ -96,6 +96,7 @@ examples: PhotonSlicer.exe -s ./STLs/Cube.stl                         -> ./STLs/
           PhotonSlicer.exe -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..
           PhotonSlicer.exe -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..
           PhotonSlicer.exe -s dialog -p dialog -g True -f False    -> full GUI is used
+          
 optional arguments:
   -h, --help            show this help message and exit
   -s STLFILENAME, --stlfilename STLFILENAME
