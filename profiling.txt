@@ -25,8 +25,22 @@ Cython triInSlice 74 sec (after making tri lists per slice)
 8 bit img  56 sec
 No fills if normal is up/down 56 sec
 
+Slice 62 sec:
+	if polypoints = 10 sec
+	ConvexFill = 14 sec
+	pfrom,pto,pmid = 8 sec
+	fillpoints.append(pfill) = 1 sec
+
+	fill = 22 sec
+		img[fillPoint[1], fillPoint[0]) = 12 sec
+		Floodfill = 10 sec
 
 
+Slicing CPU (Stl2Slices) vs GPU (GL_Stl2Slices)
+		GL_Stl2Slices: 18 sec
+		Stl2Slices:    58 sec
+
+ 
 ==============================================================================================
 Encoding Test Case:
     linux

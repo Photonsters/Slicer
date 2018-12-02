@@ -9,7 +9,7 @@
 #  
 # OR make exe directory to zip
 # 
-# 1) python guisetup.py build -b ..\PhotonSlicer.buildgui  install_exe -d ..\PhotonSlicer.installgui
+# 1) python guisetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
 # 
 # 2) in .build move all dlls (tcl86t.dll,tk86t.dll,VCRUNTIME140.dll,python36.dll) from install rootdir to libs folder
 #
@@ -35,13 +35,8 @@
 #            "numpy.core.mkl_vml_mc2.dll",
 #            "numpy.core.mkl_vml_def.dll"
 #            ]
-#
-# 4) Remove all stl's except bunny.stl and cog.stl
 #            
-# 5) 7-Zip file - Resulting .7Z is 53MB
-#
-# Diff between Con and GUI is PhotonSlicer.exe and lib/library.zip 
-# But only exchanging PhotonSlicer.Exe for Console version is enough to make it work.
+# 4) 7-Zip file - Resulting .7Z is 64MB
 #
 ################################
 

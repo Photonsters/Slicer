@@ -1,32 +1,23 @@
+# Todo/Bugs
+#  if force GPU is default....why than console mode?
+#  keep opengl center in viewport.updateScale?
+
 """
 Needed (external) packages by other modules
  cython
  numpy
  opencv-python
+ PyOpenGL
+ PyOpenGL-accelerate
 
-Usage
-1) PhotonSlicer bunny.stl photon 0.05
-Slices ./bunny.stl to ./bunny.photon with sliceheight 0.05
+Usage: use --help argument
+       
+       safe mode - command line only, CPU slicing, sliceheight 0.05mm:
+            PhotonSlicer.py -s STLs/3dBenchy.stl
 
-2) PhotonSlicer STLs/bunny.stl hare.photon 0.05
-     Slices ./STLs/bunny.stl to ./hare.photon with sliceheight 0.05
-   PhotonSlicer STLs/bunny.stl  subdir/hare.photon 0.05
-     Slices ./STLs/bunny.stl to ./subdir/hare.photon with sliceheight 0.05
-   PhotonSlicer STLs/bunny.stl  /subdir/hare.photon 0.05
-     Slices ./STLs/bunny.stl to /subdir/hare.photon with sliceheight 0.05
-    
-3) PhotonSlicer bunny.stl ./animals/photon 0.05
-Slices ./bunny.stl to ./animals/bunny.photon with sliceheight 0.05
-
-4) PhotonSlicer bunny.stl images 0.05
-Slices ./bunny.stl to ./bunny/0001.png , ./bunny/0002.png , ... with sliceheight 0.05
-
-5) PhotonSlicer bunny.stl userdir/ 0.05
-Slices ./bunny.stl to ./userdir/001.png , ./userdir/0002.png , ... with sliceheight 0.05
-
-For 1,2,3 you can add optional arguments for the resin exposure type etc.
-For 5 only last directory level may be new
-
+       gui mode - dialog to select stl file and photon file, GPU slicing, sliceheight 0.05mm:
+            PhotonSlicer.py -s dialog -p dialog -f False -g True
+            
 """
 
 # import the necessary packages
@@ -37,17 +28,15 @@ import ntpath   # to extract filename on all OS'es
 import re       # needed for case insentive replace
 
 from Stl2Slices import *
+from Svg2Slices import *
+from GL_Stl2Slices import *
 
-stlfilename=None
+filename=None
 outputpath=None
 outputfile=None
 gui=False
 
 # If cx_Freeze, check if we are in console or gui model
-if sys.stdout==None:
-    gui=True
-else:
-    gui=False	
 """
 try:
 	gui=True
@@ -56,7 +45,7 @@ try:
 except IOError:
 	gui=False
 """
-def is_bool(arg):
+def is_bool_gui(arg):
     global gui
     if arg.lower() in ('yes', 'true', 't', 'y', '1'):
         gui = True
@@ -67,24 +56,83 @@ def is_bool(arg):
     else:
         raise argparse.ArgumentTypeError('boolean value expected.')
 
+def is_bool(arg):
+    if arg.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif arg.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('boolean value expected.')
+
 def is_valid_file(arg):
-    global stlfilename
+    global filename
+    global gui
+    global args
+    if arg=="dialog":
+        if gui:
+            import tkinter
+            from tkinter.filedialog import askopenfilename
+            root=tkinter.Tk() # define root (which is opened by askopenfilename anyway) so we can destroy it afterwards
+            root.withdraw()   # hide root
+            filename=askopenfilename(initialdir = ".",title = "Open file",filetypes = (("stl files","*.stl"),("svg files","*.svg")))
+            root.destroy()    # destroy root
+            if not (filename):
+                print ("Abort, no file selected.")
+                sys.exit() 
+            args["filename"]=filename
+            return filename
+        else:
+            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')            
+
     arg=os.path.normpath(arg) # convert all / to \ for windows and vv for linux
     if not os.path.isfile(arg):
-        raise argparse.ArgumentTypeError("stlfilename argument ('"+arg+"') does not point to valid STL file")
-    elif not arg[-4:].lower()==".stl":
-	    raise argparse.ArgumentTypeError("stlfilename argument ('"+arg+"') does not point to valid STL file")
+        raise argparse.ArgumentTypeError("filename argument ('"+arg+"') does not point to valid STL/SVG file")
+    elif not (arg[-4:].lower()==".stl" or arg[-4:].lower()==".svg"):
+	    raise argparse.ArgumentTypeError("filename argument ('"+arg+"') does not point to valid STL/SVG file")
     else:
-        stlfilename = arg
+        filename = arg
         return arg
 
 def is_valid_output(arg):
-    global stlfilename
+    global filename
     global outputpath
     global outputfile
+    if arg=="dialog":
+        if gui:
+            import tkinter
+            from tkinter.filedialog import asksaveasfilename
+            root=tkinter.Tk() # define root (which is opened by askopenfilename anyway) so we can destroy it afterwards
+            root.withdraw()   # hide root
+            outputfile=asksaveasfilename(initialdir = ".",title = "Save to file",filetypes = (("photon files","*.photon"),))
+            root.destroy()    # destroy root
+            if not (outputfile):
+                print ("Abort, no file selected.")
+                sys.exit() 
+            args["photonfilename"]=outputfile
+            return outputfile
+        else:
+            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')            
+
+    if arg=="dialogdir":
+        if gui:
+            import tkinter
+            from tkinter.filedialog import askdirectory
+            root=tkinter.Tk() # define root (which is opened by askopenfilename anyway) so we can destroy it afterwards
+            root.withdraw()   # hide root
+            outputpath=askdirectory(initialdir = ".",title = "Save to directory")
+            root.destroy()    # destroy root
+            if not (outputpath):
+                print ("Abort, no file selected.")
+                sys.exit() 
+            outputpath=outputpath+os.path.sep                 
+            args["photonfilename"]=outputpath
+            return outputpath
+        else:
+            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')            
+
     if arg=="photon": #1 output to same dir and use same name but end with .photon
-        # stlfilename is checked to end with '.stl' so replace last 4 with '.photon'
-        outputfile=stlfilename[:-4]+'.photon'  
+        # filename is checked to end with '.stl' so replace last 4 with '.photon'
+        outputfile=filename[:-4]+'.photon'  
         return outputfile
     elif arg.endswith(".photon"): #2 output to current working dir but  use same name but end with .photon
         arg=os.path.normpath(arg) # make sure the slashes are correct for os
@@ -105,9 +153,9 @@ def is_valid_output(arg):
         # if not starts with slash we have relative path so we append current path
         if not arg.startswith('/') and not arg.startswith('\\'):
            arg=os.path.join(os.getcwd(),arg)           
-        # stlfilename is checked to end with '.stl' so remove last 6 to get new dir
-        bare_stlfilename=os.path.basename(stlfilename)[:-4]      
-        outputfile=os.path.join(arg[:-6],bare_stlfilename+".photon")
+        # filename is checked to end with '.stl' so remove last 6 to get new dir
+        bare_filename=os.path.basename(filename)[:-4]      
+        outputfile=os.path.join(arg[:-6],bare_filename+".photon")
         #check if parent directory exists
         pardir=os.path.dirname(arg)
         if os.path.isdir(pardir):
@@ -116,8 +164,8 @@ def is_valid_output(arg):
             raise argparse.ArgumentTypeError("photonfilename path does not exist")     
         return outputfile
     elif arg=="images": #4 output to same dir under new subdir with name of stl
-        # stlfilename is checked to end with '.stl'
-        outputpath=stlfilename[:-4]+os.path.sep
+        # filename is checked to end with '.stl'
+        outputpath=filename[:-4]+os.path.sep
         return outputpath
     elif arg.endswith("/") or arg.endswith("\\") : #5 output to user defined path
         # make sure the slashes are correct for os
@@ -139,10 +187,10 @@ def is_valid_output(arg):
         # if not starts with slash we have relative path so we append current path
         if not arg.startswith('/') and not arg.startswith('\\'):
            arg=os.path.join(os.getcwd(),arg)           
-        # stlfilename is checked to end with '.stl'
-        bare_stlfilename=os.path.basename(stlfilename)[:-4]      
+        # filename is checked to end with '.stl'
+        bare_filename=os.path.basename(filename)[:-4]      
         # make new path
-        outputpath=os.path.join(arg[:-6],bare_stlfilename+os.path.sep)
+        outputpath=os.path.join(arg[:-6],bare_filename+os.path.sep)
         #check if parent directory exists
         pardir=os.path.dirname(outputpath) #just removes last '/'
         pardir=os.path.dirname(pardir)
@@ -187,6 +235,7 @@ ap = argparse_logger(description=
                              "description: Slices a STL (binary file) to images or a photon file.\n"
                              "\n"+
                              "examples: PhotonSlicer.cmd -s ./STLs/Cube.stl                         -> ./STLs/Cube.photon\n"
+                             "          PhotonSlicer.cmd -s ./STLs/Cube.svg                         -> ./STLs/Cube.photon\n"
                              "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p photon -l 0.05       -> ./STLs/Cube.photon\n"
                              "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p /home/photon -l 0.05 -> /home/Cube.photon\n"
                              "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p /Sqrs.photon -l 0.05 -> /Sqrs.photon\n"
@@ -194,13 +243,16 @@ ap = argparse_logger(description=
                              "          PhotonSlicer.cmd -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..\n"
                              ,formatter_class=argparse.RawTextHelpFormatter)
 
-ap.add_argument("-s","--stlfilename",
+ap.add_argument("-s","--filename",
                 required=True,
-                help="name of (binary) stl file to import")
+                help="name of (binary) stl or svg file to import\n"+
+                     "'dialog' for dialog to select stl file (only in GUI mode) OR\n")
 ap.add_argument("-p","--photonfilename",
                 #type=str,
                 help="photon file name (ends with '.photon') OR \n"+
                      "output directory (ends with '/') for images OR \n"+
+                     "'dialog' to select photon file (only in GUI mode) OR\n"+
+                     "'dialogdir' to select dir to save images (only in GUI mode) OR\n"+
                      "'photon' as argument to generate photon file with same name OR \n"+
                      "'images' to generate images in directory with same name as stl\n"+
                      "these can be combined e.g. './subdir/photon'")
@@ -224,8 +276,11 @@ ap.add_argument("-o", "--offtime", required=False,
                 default=6.5,type=float,
                 help="off time between layers (sec)")
 ap.add_argument("-g", "--gui", required=False,
-                default=6.5,type=is_bool,
+                default=True,type=is_bool_gui,
                 help="show progress in popup window")
+ap.add_argument("-f", "--forceCPU", required=False,
+                default=True,type=is_bool,
+                help="force slicing with CPU instead of GPU/OpenGL")
 ap.add_argument("-e", "--execute", required=False,
                 help="execute command when done \n"+
                      "'photon' will be replace with output filename \n"+
@@ -233,10 +288,10 @@ ap.add_argument("-e", "--execute", required=False,
 
 args = vars(ap.parse_args())
 
-# Check photonfilename is valid only now (that we have stlfilename)
-sf=(args["stlfilename"])
-type = is_valid_file(sf)
-#print ("sf",sf, stlfilename)
+# Check photonfilename is valid only now (that we have filename)
+sf=(args["filename"])
+is_valid_file(sf)
+filetype = args["filename"][-4:].lower()
 
 pf=(args["photonfilename"])
 if pf==None: pf="photon"
@@ -255,24 +310,51 @@ bottomexposure = float(args["bottomexposure"])
 bottomlayers = int(args["bottomlayers"])
 offtime = float(args["offtime"])
 linkedcmd = args["execute"]
+forceCPU = args["forceCPU"]
 
-S2I=Stl2Slices(stlfilename=stlfilename,
-               outputpath=outputpath,
-               photonfilename=outputfile,
-               layerheight=layerheight,
-               scale=scale,
-               normalexposure=normalexposure,
-               bottomexposure=bottomexposure,
-               bottomlayers=bottomlayers,
-               offtime=offtime,
-               gui=gui
-               )
+# Some arguments do not work together
+if not forceCPU and not gui: #default is false, so user explicitly set it to True
+    print ("You cannot use opengl without gui.")
+    sys.exit()
 
-"""
-Test on linux using:
-python3 PhotonSlicer.py -s STLs/bunny.stl -r 0.5 -l 0.1 
-        -e "wine ~/.wine/drive_c/Program\ Files/ANYCUBIC\ Photon\ Slicer64/ANYCUBIC\ Photon\ Slicer.exe /home/nard/PhotonSlicer/photon"
-"""
+if filetype == ".svg":
+    S2I=Svg2Slices(svgfilename=filename,
+                   outputpath=outputpath,
+                   photonfilename=outputfile,
+                   layerheight=layerheight,
+                   scale=scale,
+                   normalexposure=normalexposure,
+                   bottomexposure=bottomexposure,
+                   bottomlayers=bottomlayers,
+                   offtime=offtime,
+                   gui=gui
+                   )
+elif filetype == ".stl":
+    if forceCPU:
+        S2I=Stl2Slices(stlfilename=filename,
+                   outputpath=outputpath,
+                   photonfilename=outputfile,
+                   layerheight=layerheight,
+                   scale=scale,
+                   normalexposure=normalexposure,
+                   bottomexposure=bottomexposure,
+                   bottomlayers=bottomlayers,
+                   offtime=offtime,
+                   gui=gui
+                   )
+
+    else: #use GPU/OpenGL
+        S2I=GL_Stl2Slices(stlfilename=filename,
+                   outputpath=outputpath,
+                   photonfilename=outputfile,
+                   layerheight=layerheight,
+                   scale=scale,
+                   normalexposure=normalexposure,
+                   bottomexposure=bottomexposure,
+                   bottomlayers=bottomlayers,
+                   offtime=offtime
+                   )
+
 import subprocess
 import platform
 import os
@@ -283,7 +365,7 @@ def open_folder(path):
     elif platform.system() == 'Linux':
         subprocess.Popen(['xdg-open', path])
         #os.startfile(path)
-    elif platform.system() == 'Windows':
+    else: #platform.system() == 'Windows':
         os.startfile(path)
         #os.startfile(path)
 

@@ -387,7 +387,7 @@ class Stl2Slices:
             """
 
             # Traverse all triangles
-            for pidx in slicepointindices[sliceNr]:
+            for pidx in slicepointindices[sliceNr]:                
                 p0 = points[pidx + 0]
                 p1 = points[pidx + 1]
                 p2 = points[pidx + 2]
@@ -396,14 +396,14 @@ class Stl2Slices:
                 polypoints = triInSlice.triInSlice(p0, p1, p2, sliceBottom, sliceTop)
                 # Draw filled poly, fillConvexPoly is much faster than fillPoly, but poly should be convex...
                 if polypoints:
-                    cv2.fillConvexPoly(img, numpy.array([polypoints], dtype='int32'), color=contourColor)
-
+                    # if we do fill on all lines, do we need fillConvexPoly?
+                    cv2.fillConvexPoly(img, numpy.array([polypoints], dtype='int32'), color=contourColor)                    
                     # Add points for which to floodfillpoints using normal but only if normal not along y
                     if not (n2d[0] == 0 and n2d[1] == 0):
                         nrpoints = len(polypoints)
                         for idx in range(nrpoints):
-                            pfrom = polypoints[idx % nrpoints]
-                            pto = polypoints[(idx + 1) % nrpoints]
+                            pfrom = polypoints[idx]
+                            pto = polypoints[(idx + 1) % nrpoints]                            
                             pmid = ((pfrom[0] + pto[0]) / 2, (pfrom[1] + pto[1]) / 2)
                             pfill = (int((pmid[0] - n2d[0])), int((pmid[1] - n2d[1])))
                             # Check if point inside triangle(s) - https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
@@ -436,7 +436,7 @@ class Stl2Slices:
                             nors.append(n2d)
                             ps.append([p0,p1,p2])
                             """
-
+                            
             # Floodfill all points
             tester = img.copy()
             nrTests = 0
@@ -452,12 +452,25 @@ class Stl2Slices:
             #quit()
 
             #for idx,fillPoint in enumerate(fillpoints):
+            """
+            for y in range(0,2560):            
+                oldcol=0
+                inShape=False
+                for x in range (0,1440):
+                    col=1#img[y,x]
+                    if oldcol!=col: 
+                        inShape!=inShape
+                        col=oldcol    
+                    if inShape:
+                        img[y,x]=innerColor
+            """
+
             for fillPoint in fillpoints:
                 # Check if fill is necessary at fillpoint (if fillpoint still has background color = 0,0,0)) and not fill color (=innerColor)
                 pxColor = (img[fillPoint[1], fillPoint[0], 0]#,
                            #img[fillPoint[1], fillPoint[0], 1],
                            #img[fillPoint[1], fillPoint[0], 2]
-                            )
+                           )
                 #if pxColor == (0, 0, 0):
                 if pxColor == (0):
                     # Do a testfill on tester

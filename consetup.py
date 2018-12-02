@@ -4,45 +4,10 @@
 #
 ################################
 #
-# just build	    	python consetup.py build -b ..\				#Builds on the folder above
-# build installer    python consetup.py build -b ..\  bdist_msi -d ..\		#Builds on the folder above
-#  
-# OR make exe directory to zip
+#just build	    	python consetup.py build -b ..\				#Builds on the folder above
+#build installer    python consetup.py build -b ..\  bdist_msi -d ..\		#Builds on the folder above
 #
-# 1) python consetup.py build -b ..\PhotonSlicer.buildcon  install_exe -d ..\PhotonSlicer.installcon
-# 
-# 2) in .build move all dlls (tcl86t.dll,tk86t.dll,VCRUNTIME140.dll,python36.dll) from install rootdir to libs folder
-#
-# 3) following files (in order of size) are large and not necessary:
-#           [
-#            "numpy.core.mkl_avx512_mic.dll",
-#            "numpy.core.mkl_avx512.dll",
-#            "numpy.core.mkl_avx2.dll",
-#            "numpy/core/mkl_avx.dll",
-#            "numpy.core.libopenblas.dll",
-#            "numpy.core.mkl_mc3.dll",
-#            "numpy.core.mkl_mc.dll",
-#
-#            "numpy.core.svml_dispmd.dll"
-#            "numpy.core.mkl_sequential.dll",
-#
-#            "numpy.core.vml_avx512.dll",
-#            "numpy.core.vml_avx.dll",
-#            "numpy.core.vml_avx2.dll",
-#            "numpy.core.vml_avx512_mic.dll",
-#            "numpy.core.mkl_vml_mc.dll",
-#            "numpy.core.mkl_vml_mc3.dll",
-#            "numpy.core.mkl_vml_mc2.dll",
-#            "numpy.core.mkl_vml_def.dll"
-#            ]
-#
-# 4) Remove all stl's except bunny.stl and cog.stl
-#            
-# 5) 7-Zip file - Resulting .7Z is 53MB
-#
-# Diff between Con and GUI is PhotonSlicer.exe and lib/library.zip 
-#
-#################################
+################################
 
 import os
 import sys
@@ -62,7 +27,7 @@ shortcut_table = [
      "",				# Icon
      0,					# IconIndex
      None,				# ShowCmd
-     "TARGETDIR",       # WkDir
+     "TARGETDIR",              		# WkDir
      )
     ]
 
@@ -80,7 +45,8 @@ PYTHON_INSTALL_DIR = os.path.dirname(os.path.dirname(os.__file__))
 build_exe_options = {
 					"packages": ["os", "numpy"],
 					"include_msvcr" : True,
-					"excludes":["email","html","https","json","urllib","xml","xmlrpc","setuptools","pydoc_data"],
+					"excludes":[],
+					#"include_files": [""], 
 					"include_files":[
 									#os.path.join(PYTHON_INSTALL_DIR,'DLLs','tcl86t.dll'), 
 									#os.path.join(PYTHON_INSTALL_DIR,'DLLs','tk86t.dll'),
