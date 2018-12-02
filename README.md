@@ -7,8 +7,6 @@ The PhotonSlicer Converts STL (binary) files to Images or PhotonFile. It is prog
 ## Status
 
 Not yet ready:
-- PhotonSlicer was optimized for speed using Cython. Check if it is comparable to Anycubic Photon Slicer.
-- The install packages are rebuild but very large to unnecessary numpy.core dll's. Find a to exclude these from package.
 - Real life test with the produced photon files have to be done.
 
 ---
@@ -39,7 +37,7 @@ For Linux/MeshMixer user: You should already have wine up and running to use Mes
     - Printer software name : 'Photon Slicer'
     - Printer software path : 'C:/Program Files/PhotonSlicer/PhotonSlicer.exe'
     - Format of file to ... : 'STL'
-    - Command line artuments: '-g True -e folder -l 0.05 -o 6 -t 8 -be 90 -bl 8 -p "C:/Program Files/PhotonSlicer/STLs/photon" -s'      
+    - Command line artuments: '-g True -f False -e folder -l 0.05 -o 6 -t 8 -be 90 -bl 8 -p "C:/Program Files/PhotonSlicer/STLs/photon" -s'      
 8. Close window 'Printer Properties'
 9. Close window 'Preferences'
 
@@ -81,20 +79,23 @@ If you don't see a progress window and now file is added to 'C:/Program Files/Ph
 
 ## Command Line Parameters
 ```
-usage: PhotonSlicer.py [-h] -s STLFILENAME [-p PHOTONFILENAME]
-                       [-l LAYERHEIGHT] [-r RESCALE] [-t EXPOSURE]
-                       [-be BOTTOMEXPOSURE] [-bl BOTTOMLAYERS] [-o OFFTIME]
-                       [-g GUI]
+usage: PhotonSlicer.py [-h] -s FILENAME [-p PHOTONFILENAME] 
+                       [-r RESCALE] 
+                       [-l LAYERHEIGHT] [-t EXPOSURE] [-be BOTTOMEXPOSURE]
+                       [-bl BOTTOMLAYERS] [-o OFFTIME] 
+                       [-g GUI] [-f FORCECPU]
+                       [-e EXECUTE]
 
 required: stlfilename
 
 examples: PhotonSlicer.exe -s ./STLs/Cube.stl                         -> ./STLs/Cube.photon
+          PhotonSlicer.exe -s ./STLs/Cube.svg                         -> ./STLs/Cube.photon
           PhotonSlicer.exe -s ./STLs/Cube.stl -p photon -l 0.05       -> ./STLs/Cube.photon
           PhotonSlicer.exe -s ./STLs/Cube.stl -p /home/photon -l 0.05 -> /home/Cube.photon
           PhotonSlicer.exe -s ./STLs/Cube.stl -p /Sqrs.photon -l 0.05 -> /Sqrs.photon
           PhotonSlicer.exe -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..
           PhotonSlicer.exe -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..
-
+          PhotonSlicer.exe -s dialog -p dialog -g True -f False    -> full GUI is used
 optional arguments:
   -h, --help            show this help message and exit
   -s STLFILENAME, --stlfilename STLFILENAME
@@ -102,6 +103,8 @@ optional arguments:
   -p PHOTONFILENAME, --photonfilename PHOTONFILENAME
                         photon file name (ends with '.photon') OR 
                         output directory (ends with '/') for images OR 
+                        'dialog' to select photon file (only in GUI mode) OR
+                        'dialogdir' to select dir to save images (only in GUI mode) OR
                         'photon' as argument to generate photon file with same name OR 
                         'images' to generate images in directory with same name as stl
                         these can be combined e.g. './subdir/photon'
@@ -118,6 +121,8 @@ optional arguments:
   -o OFFTIME, --offtime OFFTIME
                         off time between layers (sec)
   -g GUI, --gui GUI     show progress in popup window
+  -f FORCECPU, --forceCPU FORCECPU
+                        force slicing with CPU instead of GPU/OpenGL
   -e EXECUTE, --execute EXECUTE
                         execute command when done 
                         'photon' will be replace with output filename 
