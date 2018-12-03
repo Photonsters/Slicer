@@ -15,7 +15,7 @@ Not yet ready:
 
 It has two install folders: 'Console/' with a Command Line Interface and 'Win64/' with a graphical interface. The last one is most suitable as plugin for MeshMixer. Both contain split zip archives.
 
-For Linux and OSX you have to install python and some libraries (cython, numpy, open-cv). 
+For Linux and OSX you have to install python and some libraries (Cython, numpy, opencv-python, PyOpenGL, PyOpenGL-accelerate). 
 
 For Linux/MeshMixer user: You should already have wine up and running to use MeshMixer. You should install the Win64/ Zip files for PhotonSlicer in Wine too. 
 
