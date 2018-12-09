@@ -1,6 +1,6 @@
 # Port of https:#github.com/Formlabs/hackathon-slicer/blob/master/app/js/viewport.js
 #
-#
+# Windows Error 'glutInit undefined': If glutInit not found we must use pygame
 
 #external
 import OpenGL
@@ -13,6 +13,8 @@ extension(s) we're going to use.  (Requires PyOpenGL 3.0.1b2 or above).'''
 from OpenGL.GL.framebufferobjects import *
 import numpy
 import math
+import cv2
+import pygame
 
 ########################################
 
@@ -235,14 +237,32 @@ class Viewport:
     slice=None
     # Model object
     mesh = {"loaded": False}
-    window=None
+    # window=None
     windowsize=(500,500)#(256*3,144*3)
+    glutAvailable=False
 
     def __init__(self):
         # init printer specs
         self.printer=Printer()
+        self.glutAvailable=bool(glutInit)
+        self.glutAvailable=False
 
-        glutInit(sys.argv)
+        if self.glutAvailable:
+            self.init_glut()
+        else:
+            self.init_pygame()    
+
+        # Some things that where global in npm javascript version
+        self.quad=self.makeQuad()
+        self.base=self.makeBase()
+        self.scene={"roll": 45+math.pi/2, "pitch": 45}
+        self.slice=self.makeSlice()
+        glEnable(GL_DEPTH_TEST)
+        self.draw()
+        
+        
+    def init_glut(self):    
+        glutInit()#sys.argv)
         #glutInitContextVersion( 3, 2 )
 
         # Create a double-buffer RGBA window.   (Single-buffering is possible.
@@ -253,21 +273,23 @@ class Viewport:
         # https://noobtuts.com/python/opengl-introduction
         glutInitWindowSize(self.windowsize[0],self.windowsize[1])    
         glutInitWindowPosition(0,0)    
-        self.window=glutCreateWindow('python port of hackathon-slicer')
+        # self.window=
+        glutCreateWindow('python port of hackathon-slicer')
 
         # Set the display callback.  You can set other callbacks for keyboard and
         # mouse events.
         glutDisplayFunc(self.draw)
         #glutIdleFunc(self.draw)
 
-        # Some things that where global in npm javascript version
-        self.quad=self.makeQuad()
-        self.base=self.makeBase()
-        self.scene={"roll": 45+math.pi/2, "pitch": 45}
-        self.slice=self.makeSlice()
-        glEnable(GL_DEPTH_TEST)
-        self.draw()
-        
+
+    def init_pygame(self):
+        pygame.display.set_mode(self.windowsize, pygame.DOUBLEBUF | pygame.OPENGL | pygame.OPENGLBLIT)
+        pygame.display.set_caption('python port of hackathon-slicer (cv2)')
+        #self.cv2_title='python port of hackathon-slicer (cv2)'
+        #cv2.namedWindow(self.cv2_title, flags=cv2.WINDOW_GUI_NORMAL)#cv2.WINDOW_NORMAL)
+        #cv2.resizeWindow(self.cv2_title, self.windowsize[0], self.windowsize[1])
+        #cv2.moveWindow(self.cv2_title, 0,0);
+        print ("Glut Not Available.")
 
     def display(self):
         glutMainLoop()
@@ -305,7 +327,6 @@ class Viewport:
         glAttachShader(prog, v)
         glAttachShader(prog, f)
         glLinkProgram(prog)
-
         #if (not glGetProgramParameter(prog, GL_LINK_STATUS)):
         if (not glGetProgramiv(prog, GL_LINK_STATUS)):
             raise RuntimeError("Could not link program:" + glGetProgramInfoLog(prog))
@@ -407,6 +428,12 @@ class Viewport:
 
 
     def draw(self):
+        if self.glutAvailable:
+            self.draw_glut()
+        else:
+            self.draw_pygame()
+
+    def draw_glut(self):        
         glClearColor(1, 1, 1, 1)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # clear the screen
 
@@ -417,6 +444,30 @@ class Viewport:
             self.drawQuad(self.quad)
             pass
         glutSwapBuffers()
+
+    def draw_pygame(self):
+        glClearColor(1, 1, 1, 1)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # clear the screen
+        self.drawBase(self.base)
+
+        if (self.mesh['loaded']):
+            self.drawMesh(self.mesh)
+            self.drawQuad(self.quad)
+
+        pygame.display.flip()
+        """
+        # Load the data from the framebuffer
+        img=numpy.empty([self.windowsize[0]*self.windowsize[1]*4],dtype=numpy.uint8) #data = new Uint8Array(printer.pixels() * 4)
+        glReadPixels(0, 0, 
+                      self.windowsize[0], self.windowsize[1], 
+                      GL_RGBA,
+                      GL_UNSIGNED_BYTE, img)
+
+        img=img.reshape([self.windowsize[0],self.windowsize[1],4])
+        img=cv2.flip(img,0)
+        cv2.imshow(self.cv2_title,img)
+        cv2.waitKey(1) # make it show the image
+        """
 
 
     def makeQuad(self):

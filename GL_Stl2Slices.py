@@ -154,6 +154,7 @@ class GL_Stl2Slices:
                  bottomlayers=8,
                  offtime=6.5,
                  ):
+
         self.viewport = GL_Viewport.Viewport()
 
         # Get path of script/exe for local resources like iconpath and newfile.photon
@@ -200,7 +201,7 @@ class GL_Stl2Slices:
         self.viewport.loadMesh(points,normals,self.cmin,self.cmax);
         #self.viewport.display() # this will loop until window is closed
         self.viewport.draw()
-        
+
         microns = layerheight*1000 #document.getElementById("height").value;
         bounds = self.viewport.getBounds()
         #print ((bounds['zmax']-bounds['zmin']) , self.viewport.printer.getGLscale())

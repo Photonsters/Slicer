@@ -4,7 +4,7 @@
 
 """
 Needed (external) packages by other modules
- cython
+ Cython
  numpy
  opencv-python
  PyOpenGL
