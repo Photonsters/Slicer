@@ -9,6 +9,7 @@ Needed (external) packages by other modules
  opencv-python
  PyOpenGL
  PyOpenGL-accelerate
+ Pygame (if glut not available)
 
 Usage: use --help argument
        
