@@ -13,31 +13,16 @@
 #
 # 2) in .build move all dlls (tcl86t.dll,tk86t.dll,VCRUNTIME140.dll,python36.dll) from install rootdir to libs folder
 #
-# 3) following files (in order of size) are large and not necessary:
-#           [
-#            "numpy.core.mkl_avx512_mic.dll",
-#            "numpy.core.mkl_avx512.dll",
-#            "numpy.core.mkl_avx2.dll",
-#            "numpy/core/mkl_avx.dll",
-#            "numpy.core.libopenblas.dll",
-#            "numpy.core.mkl_mc3.dll",
-#            "numpy.core.mkl_mc.dll",
+# 3) remove 1 of 2 occurences:
+#           \lib\numpy\core\libopenblas.CSRRD7HKRKC3T3YXA7VY7TAZGLSWDKW6.gfortran-win_amd64
+#           \lib\numpy\.libs\libopenblas.CSRRD7HKRKC3T3YXA7VY7TAZGLSWDKW6.gfortran-win_amd64
 #
-#            "numpy.core.svml_dispmd.dll"
-#            "numpy.core.mkl_sequential.dll",
+# 4) python consetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
 #
-#            "numpy.core.vml_avx512.dll",
-#            "numpy.core.vml_avx.dll",
-#            "numpy.core.vml_avx2.dll",
-#            "numpy.core.vml_avx512_mic.dll",
-#            "numpy.core.mkl_vml_mc.dll",
-#            "numpy.core.mkl_vml_mc3.dll",
-#            "numpy.core.mkl_vml_mc2.dll",
-#            "numpy.core.mkl_vml_def.dll"
-#            ]
+# 5) 7-Zip file - Resulting .7Z is 64MB
 #
-# 4) 7-Zip file - Resulting .7Z is 64MB
 #
+# Error on PhotonSlicer.exe -s STLs\legocog.stl -g False -f True
 ################################
 
 import os
