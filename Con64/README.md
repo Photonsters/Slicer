@@ -1,1 +1,1 @@
-
+'Win64/' contains the install files for Windows 64-bits returning your slicing progress in a window. If you want to have your progress info displayed as plain text, replace PhotonSlicer.exe with the file in Con64/.
