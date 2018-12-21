@@ -31,7 +31,7 @@ shortcut_table = [
      )
     ]
 
-	
+
 # Now create the table dictionary
 msi_data = {"Shortcut": shortcut_table}
 
@@ -46,9 +46,9 @@ build_exe_options = {
 					"packages": ["os", "numpy"],
 					"include_msvcr" : True,
 					"excludes":[],
-					#"include_files": [""], 
+					#"include_files": [""],
 					"include_files":[
-									#os.path.join(PYTHON_INSTALL_DIR,'DLLs','tcl86t.dll'), 
+									#os.path.join(PYTHON_INSTALL_DIR,'DLLs','tcl86t.dll'),
 									#os.path.join(PYTHON_INSTALL_DIR,'DLLs','tk86t.dll'),
 									"PhotonSlicer.gif",
 									"newfile.photon",
@@ -63,11 +63,11 @@ os.environ['TK_LIBRARY'] = os.path.join(PYTHON_INSTALL_DIR, 'tcl', 'tk8.6')
 # console application).
 base = None
 if sys.platform == "win32":
-    base = "Console" 
-	
+    base = "Console"
+
 if 'bdist_msi' in sys.argv:
     sys.argv += ['--initial-target-dir', 'c:\PhotonSlicer']
-	
+
 setup(  name = "PhotonSlicer_Console",
         version = "0.1",
 	    author= "Photonsters",
@@ -76,6 +76,3 @@ setup(  name = "PhotonSlicer_Console",
         options = {"build_exe": build_exe_options,"bdist_msi": bdist_msi_options},
         executables = [Executable(script="PhotonSlicer.py", base=base,icon="PhotonSlicer.ico",)]
 )
-
-
-

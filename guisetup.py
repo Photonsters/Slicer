@@ -10,19 +10,19 @@
 # OR make exe directory to zip
 #
 # 1) python guisetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
+# OF
+# 2) python consetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
 #
-# 2) in .build move all dlls (tcl86t.dll,tk86t.dll,VCRUNTIME140.dll,python36.dll) from install rootdir to libs folder
+# 3) in .build move all dlls (tcl86t.dll,tk86t.dll,VCRUNTIME140.dll,python36.dll) from install rootdir to libs folder
 #
-# 3) remove 1 of 2 occurences:
+# 4) in STLs folder remove all files except legocog.stl
+#
+# 5) remove 1 of 2 occurences:
 #           \lib\numpy\core\libopenblas.CSRRD7HKRKC3T3YXA7VY7TAZGLSWDKW6.gfortran-win_amd64
 #           \lib\numpy\.libs\libopenblas.CSRRD7HKRKC3T3YXA7VY7TAZGLSWDKW6.gfortran-win_amd64
 #
-# 4) python consetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
+# 6) 7-Zip file - Resulting .7Z is 64MB
 #
-# 5) 7-Zip file - Resulting .7Z is 64MB
-#
-#
-# Error on PhotonSlicer.exe -s STLs\legocog.stl -g False -f True
 ################################
 
 import os

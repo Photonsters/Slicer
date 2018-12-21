@@ -25,7 +25,9 @@ except Exception:
 if not glutAvailable:
     print ("GLUT is not available.")
     try:
-        import pygame
+        import contextlib
+        with contextlib.redirect_stdout(None):
+            import pygame
     except ImportError:
         print ("Install pygame to use GPU slicing.")
         sys.exit()
@@ -256,6 +258,12 @@ class Viewport:
     glutAvailable=False
 
     def __init__(self):
+        # Get path of script/exe for local resources like iconpath and newfile.photon
+        if getattr(sys, 'frozen', False):# frozen
+            self.installpath = os.path.dirname(sys.executable)
+        else: # unfrozen
+            self.installpath = os.path.dirname(os.path.realpath(__file__))
+
         global glutAvailable
         # init printer specs
         self.printer=Printer()
@@ -471,8 +479,8 @@ class Viewport:
         quad = {}
         quad['prog'] = self.makeProgram(
             quad,
-            open('quad.vert','r').read(),
-            open('quad.frag','r').read(),
+            open(os.path.join(self.installpath,'quad.vert'),'r').read(),
+            open(os.path.join(self.installpath,'quad.frag'),'r').read(),
             ['view','tex','frac','aspect','bounds'], ['v'])
 
         quad['vert'] =  glGenBuffers(1)
@@ -493,8 +501,8 @@ class Viewport:
         base = {}
         base['prog'] = self.makeProgram(
             base,
-            open('base.vert').read(),
-            open('base.frag').read(),
+            open(os.path.join(self.installpath,'base.vert')).read(),
+            open(os.path.join(self.installpath,'base.frag')).read(),
             ['view', 'zmin', 'aspect'], ['v'])
 
         base['vert'] = glGenBuffers(1) #createBuffer()
@@ -519,8 +527,8 @@ class Viewport:
 
         slice['prog'] = self.makeProgram(
             slice,
-            open('slice.vert','r').read(),
-            open('slice.frag','r').read(),
+            open(os.path.join(self.installpath,'slice.vert'),'r').read(),
+            open(os.path.join(self.installpath,'slice.frag'),'r').read(),
             ['model','bounds','frac','aspect'], ['v'])
 
         glBindTexture(GL_TEXTURE_2D, slice['tex'])
@@ -605,8 +613,8 @@ class Viewport:
         # Compile shader program for mesh
         self.mesh['prog'] = self.makeProgram(
             self.mesh,
-            open('mesh.vert','r').read(),
-            open('mesh.frag','r').read(),
+            open(os.path.join(self.installpath,'mesh.vert'),'r').read(),
+            open(os.path.join(self.installpath,'mesh.frag'),'r').read(),
             ['view', 'model'], ['v', 'n'])
 
         # Store unique vertices
