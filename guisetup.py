@@ -10,19 +10,23 @@
 # OR make exe directory to zip
 #
 # 1) python guisetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
-# OF
-# 2) python consetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
 #
-# 3) in .build move all dlls (tcl86t.dll,tk86t.dll,VCRUNTIME140.dll,python36.dll) from install rootdir to libs folder
+# 2) in .build move the dlls tcl86t.dll,tk86t.dll,VCRUNTIME140.dll from install rootdir to libs folder
+#    DO NOT MOVE python36.dll, this needs to stay in the rootdir
 #
-# 4) in STLs folder remove all files except legocog.stl
+# 3) in STLs folder remove all files except legocog.stl
 #
-# 5) remove 1 of 2 occurences:
+# 4) remove 1 of 2 occurences:
 #           \lib\numpy\core\libopenblas.CSRRD7HKRKC3T3YXA7VY7TAZGLSWDKW6.gfortran-win_amd64
 #           \lib\numpy\.libs\libopenblas.CSRRD7HKRKC3T3YXA7VY7TAZGLSWDKW6.gfortran-win_amd64
 #
-# 6) 7-Zip file - Resulting .7Z is 64MB
+# 5) 7-Zip file - use max part size of 24M - Results in 2x .7Z file.
 #
+# 6) Copy zip to github /Win64
+#
+# 7) python consetup.py build -b ..\PhotonSlicer.build  install_exe -d ..\PhotonSlicer.install
+#
+# 8) Copy photonslicer.exe (console version) to github /Con64
 ################################
 
 import os
