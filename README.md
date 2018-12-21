@@ -1,6 +1,6 @@
 # PhotonSlicer
 
-The PhotonSlicer Converts STL (binary) files to Images or PhotonFile. It is programmed in Python 3 and uses Cython (fast compression / mesh calculations), OpenCV (image drawing routines) and numpy (handling large image data).
+The PhotonSlicer Converts STL (binary) files to Images or PhotonFile. It is programmed in Python 3 and uses Cython (fast compression / mesh calculations), OpenCV (image drawing routines), numpy (handling large image data) and pyopengl for slicing if possible.
 
 ---
 
@@ -10,14 +10,14 @@ Not yet ready:
 - Real life test with the produced photon files have to be done.
 
 ---
-  
+
 ## Installation
 
-It has two install folders: 'Console/' with a Command Line Interface and 'Win64/' with a graphical interface. The last one is most suitable as plugin for MeshMixer. Both contain split zip archives.
+'Win64/' contains the install files for Windows 64-bits. Just unpack and run!
 
-For Linux and OSX you have to install python and some libraries (Cython, numpy, opencv-python, PyOpenGL, PyOpenGL-accelerate, Pygame if glut not available). 
+For Linux and OSX you have to install python and some libraries (Cython, numpy, opencv-python, PyOpenGL, PyOpenGL-accelerate, Pygame if glut not available).
 
-For Linux/MeshMixer user: You should already have wine up and running to use MeshMixer. You should install the Win64/ Zip files for PhotonSlicer in Wine too. 
+For Linux/MeshMixer user: You should already have wine up and running to use MeshMixer. You should install the Win64/ Zip files for PhotonSlicer in Wine too.
 
 ---
 
@@ -28,7 +28,7 @@ For Linux/MeshMixer user: You should already have wine up and running to use Mes
 4. Go to menu File > Preferences (Alt-T)
 5. Go to tab Printers
 6. Choose Add
-7. Fill fields as follows: 
+7. Fill fields as follows:
     - Manufacturer: 'Anycubic'
     - Model: 'Photon - MC Rapid Clear' or append your own resin brand/type names
     - Width: '65.00'
@@ -53,7 +53,7 @@ You can add an extra 'printer' for each resin / settings combo you need.
 If you don't see a progress window and now file is added to 'C:/Program Files/PhotonSlicer/STLs/photon' check 'C:/Program Files/PhotonSlicer/log.txt' for error messages.
 
 
-## MeshMixer Full Workflow 
+## MeshMixer Full Workflow
 
 1. Open an STL file, check if fits the build volume and is not below it.
 2. Hollow in MeshMixer
@@ -62,7 +62,7 @@ If you don't see a progress window and now file is added to 'C:/Program Files/Ph
 3. Infill in MeshMixer
     - Maker's Muse - https://www.youtube.com/watch?v=ffmg1E3m1Ak&t=375s
 4. Orientation - Principles using Anycubic Photon Slicer
-    - All About 3D Blog - https://www.youtube.com/watch?v=7eZWHUOhoAw 
+    - All About 3D Blog - https://www.youtube.com/watch?v=7eZWHUOhoAw
 5. Supports in MeshMixer
     - MeshMixer - https://www.youtube.com/watch?v=aFTyTV3wwsE
     - Josef Prusa - FDM: https://www.youtube.com/watch?v=OXFKVmMwXCQ
@@ -72,17 +72,17 @@ If you don't see a progress window and now file is added to 'C:/Program Files/Ph
 ---
 
 ## Functionality under development
-- The main focus is speed.
+- The main focus will remain speed, although OpenGL slicing made it a lot faster.
 - Since PhotonSlicer was mainly meant as a plugin, mesh editing (hollowing/infill/positioning) will not be developed. Use the functionality of MeshMixer instead!
 
 ---
 
 ## Command Line Parameters
 ```
-usage: PhotonSlicer.py [-h] -s FILENAME [-p PHOTONFILENAME] 
-                       [-r RESCALE] 
+usage: PhotonSlicer.py [-h] -s FILENAME [-p PHOTONFILENAME]
+                       [-r RESCALE]
                        [-l LAYERHEIGHT] [-t EXPOSURE] [-be BOTTOMEXPOSURE]
-                       [-bl BOTTOMLAYERS] [-o OFFTIME] 
+                       [-bl BOTTOMLAYERS] [-o OFFTIME]
                        [-g GUI] [-f FORCECPU]
                        [-e EXECUTE]
 
@@ -95,18 +95,18 @@ examples: PhotonSlicer.exe -s ./STLs/Cube.stl                         -> ./STLs/
           PhotonSlicer.exe -s ./STLs/Cube.stl -p /Sqrs.photon -l 0.05 -> /Sqrs.photon
           PhotonSlicer.exe -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..
           PhotonSlicer.exe -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..
-          PhotonSlicer.exe -s dialog -p dialog -g True -f False    -> full GUI is used
-          
+          PhotonSlicer.exe -s dialog -p dialog -g True -f False    -> OpenGL is used
+
 optional arguments:
   -h, --help            show this help message and exit
   -s STLFILENAME, --stlfilename STLFILENAME
                         name of (binary) stl file to import
   -p PHOTONFILENAME, --photonfilename PHOTONFILENAME
-                        photon file name (ends with '.photon') OR 
-                        output directory (ends with '/') for images OR 
+                        photon file name (ends with '.photon') OR
+                        output directory (ends with '/') for images OR
                         'dialog' to select photon file (only in GUI mode) OR
                         'dialogdir' to select dir to save images (only in GUI mode) OR
-                        'photon' as argument to generate photon file with same name OR 
+                        'photon' as argument to generate photon file with same name OR
                         'images' to generate images in directory with same name as stl
                         these can be combined e.g. './subdir/photon'
   -l LAYERHEIGHT, --layerheight LAYERHEIGHT
@@ -125,11 +125,8 @@ optional arguments:
   -f FORCECPU, --forceCPU FORCECPU
                         force slicing with CPU instead of GPU/OpenGL
   -e EXECUTE, --execute EXECUTE
-                        execute command when done 
-                        'photon' will be replace with output filename 
+                        execute command when done
+                        'photon' will be replace with output filename
                         if argument is 'folder' a file browser will open
 
 ```
-
-
-
