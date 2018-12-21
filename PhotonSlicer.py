@@ -12,13 +12,13 @@ Needed (external) packages by other modules
  Pygame (if glut not available)
 
 Usage: use --help argument
-       
+
        safe mode - command line only, CPU slicing, sliceheight 0.05mm:
             PhotonSlicer.py -s STLs/3dBenchy.stl
 
        gui mode - dialog to select stl file and photon file, GPU slicing, sliceheight 0.05mm:
             PhotonSlicer.py -s dialog -p dialog -f False -g True
-            
+
 """
 
 # import the necessary packages
@@ -79,11 +79,11 @@ def is_valid_file(arg):
             root.destroy()    # destroy root
             if not (filename):
                 print ("Abort, no file selected.")
-                sys.exit() 
+                sys.exit()
             args["filename"]=filename
             return filename
         else:
-            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')            
+            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')
 
     arg=os.path.normpath(arg) # convert all / to \ for windows and vv for linux
     if not os.path.isfile(arg):
@@ -108,11 +108,11 @@ def is_valid_output(arg):
             root.destroy()    # destroy root
             if not (outputfile):
                 print ("Abort, no file selected.")
-                sys.exit() 
+                sys.exit()
             args["photonfilename"]=outputfile
             return outputfile
         else:
-            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')            
+            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')
 
     if arg=="dialogdir":
         if gui:
@@ -124,27 +124,27 @@ def is_valid_output(arg):
             root.destroy()    # destroy root
             if not (outputpath):
                 print ("Abort, no file selected.")
-                sys.exit() 
-            outputpath=outputpath+os.path.sep                 
+                sys.exit()
+            outputpath=outputpath+os.path.sep
             args["photonfilename"]=outputpath
             return outputpath
         else:
-            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')            
+            raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')
 
     if arg=="photon": #1 output to same dir and use same name but end with .photon
         # filename is checked to end with '.stl' so replace last 4 with '.photon'
-        outputfile=filename[:-4]+'.photon'  
+        outputfile=filename[:-4]+'.photon'
         return outputfile
     elif arg.endswith(".photon"): #2 output to current working dir but  use same name but end with .photon
         arg=os.path.normpath(arg) # make sure the slashes are correct for os
         # if not starts with slash we have relative path so we append current path
         if not arg.startswith('/') and not arg.startswith('\\'):
-           arg=os.path.join(os.getcwd(),arg)           
+           arg=os.path.join(os.getcwd(),arg)
         #check if parent directory exists
         pardir=os.path.dirname(arg)
         if os.path.isdir(pardir):
             outputfile = arg
-            return outputfile 
+            return outputfile
         else:
             raise argparse.ArgumentTypeError("photonfilename path does not exist")
         return outputfile
@@ -153,16 +153,16 @@ def is_valid_output(arg):
         arg=os.path.normpath(arg)
         # if not starts with slash we have relative path so we append current path
         if not arg.startswith('/') and not arg.startswith('\\'):
-           arg=os.path.join(os.getcwd(),arg)           
+           arg=os.path.join(os.getcwd(),arg)
         # filename is checked to end with '.stl' so remove last 6 to get new dir
-        bare_filename=os.path.basename(filename)[:-4]      
+        bare_filename=os.path.basename(filename)[:-4]
         outputfile=os.path.join(arg[:-6],bare_filename+".photon")
         #check if parent directory exists
         pardir=os.path.dirname(arg)
         if os.path.isdir(pardir):
-            return outputfile 
+            return outputfile
         else:
-            raise argparse.ArgumentTypeError("photonfilename path does not exist")     
+            raise argparse.ArgumentTypeError("photonfilename path does not exist")
         return outputfile
     elif arg=="images": #4 output to same dir under new subdir with name of stl
         # filename is checked to end with '.stl'
@@ -170,10 +170,10 @@ def is_valid_output(arg):
         return outputpath
     elif arg.endswith("/") or arg.endswith("\\") : #5 output to user defined path
         # make sure the slashes are correct for os
-        arg=os.path.normpath(arg)+os.path.sep 
+        arg=os.path.normpath(arg)+os.path.sep
         # if not starts with slash we have relative path so we append current path
         if not arg.startswith('/') and not arg.startswith('\\'):
-           arg=os.path.join(os.getcwd(),arg)           
+           arg=os.path.join(os.getcwd(),arg)
         #check if parent directory exists
         pardir=os.path.dirname(arg) #just removes last '/'
         pardir=os.path.dirname(pardir)
@@ -187,9 +187,9 @@ def is_valid_output(arg):
         arg=os.path.normpath(arg)
         # if not starts with slash we have relative path so we append current path
         if not arg.startswith('/') and not arg.startswith('\\'):
-           arg=os.path.join(os.getcwd(),arg)           
+           arg=os.path.join(os.getcwd(),arg)
         # filename is checked to end with '.stl'
-        bare_filename=os.path.basename(filename)[:-4]      
+        bare_filename=os.path.basename(filename)[:-4]
         # make new path
         outputpath=os.path.join(arg[:-6],bare_filename+os.path.sep)
         #check if parent directory exists
@@ -203,12 +203,11 @@ def is_valid_output(arg):
         raise argparse.ArgumentTypeError("photonfilename argument not valid")
 
 # Rewrite argparse _print_message to it prints using the print command
-sys.tracebacklimit = 0
 class argparse_logger(argparse.ArgumentParser):
-    def _print_message(self,message,stderr):        
+    def _print_message(self,message,stderr):
         print (message)
         #raise Exception(message)
-        #pass         
+        #pass
 
 # If we are in GUI we want to output all prints to log.txt
 import sys
@@ -221,8 +220,8 @@ if gui:
     else: # unfrozen
         installpath = os.path.dirname(os.path.realpath(__file__))
     logfilename=os.path.join(installpath,"log.txt")
-    sys.stdout = open(logfilename, 'a+')  
-    sys.stderr = open(logfilename, 'a')  
+    sys.stdout = open(logfilename, 'a+')
+    sys.stderr = open(logfilename, 'a')
     ts = time.time()
     print ("")
     print ("---------------------------")
@@ -285,8 +284,16 @@ ap.add_argument("-e", "--execute", required=False,
                 help="execute command when done \n"+
                      "'photon' will be replace with output filename \n"+
                      "if argument is 'folder' a file browser will open")
+ap.add_argument("-v", "--verbose", required=False,
+                default=False,type=is_bool,
+                help="verbose output")
 args = vars(ap.parse_args())
 
+# Check if we want more debugging info
+debug=(args["verbose"])
+if not debug:
+    sys.tracebacklimit = 0
+    #pass
 
 # Check photonfilename is valid only now (that we have filename)
 sf=(args["filename"])

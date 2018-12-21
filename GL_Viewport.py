@@ -14,14 +14,28 @@ from OpenGL.GL.framebufferobjects import *
 import numpy
 import math
 import cv2
-import pygame
+
+#Test if glutInit available, if not we want to use pygame
+#Even if bool(glutInit) wil return True the call on glutInit might still fail
+glutAvailable=True
+try:
+    glutInit()
+except Exception:
+    glutAvailable=False
+if not glutAvailable:
+    print ("GLUT is not available.")
+    try:
+        import pygame
+    except ImportError:
+        print ("Install pygame to use GPU slicing.")
+        sys.exit()
 
 ########################################
 
 class Printer:
     resolution = {"x": 1440, "y": 2560};
     width_mm = 1440*0.047;#25.4 * 3;
-    
+
     def aspectRatio(self):
         return self.resolution['x'] / self.resolution['y']
 
@@ -74,7 +88,7 @@ class Mat4:
     def MulV3s(M,Vs):
         # M is 4x4 matrix as 1 dimensional 16 long vector row after row
         # Vs is nx3 matrix of 1-dim vectors of length 3
-        #        points3n=self.mesh['verts'] 
+        #        points3n=self.mesh['verts']
 
         nrVs=Vs.shape[0]
         Vnx4=numpy.append(Vs,numpy.ones((nrVs,1)),axis=-1)
@@ -121,14 +135,14 @@ class Mat4:
         if axis==0:
             O=numpy.array([1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1])
         elif axis==1:
-            O=numpy.array([c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1])    
+            O=numpy.array([c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1])
         elif axis==2:
-            O=numpy.array([c,-s,0,0,s,c,0,0,0,0,1,0,0,0,0,1])   
-        else: 
+            O=numpy.array([c,-s,0,0,s,c,0,0,0,0,1,0,0,0,0,1])
+        else:
             return
         O4x4=O.reshape([4,4])
         O4x4I=O4x4.transpose()
-        
+
         M4x4=M.reshape([4,4])
         M4x4I=M4x4.transpose()
 
@@ -171,7 +185,7 @@ class Mat4:
             a20 = M[8];
             a21 = M[9];
             a22 = M[10];
-            a23 = M[11];            
+            a23 = M[11];
             out[0] = a00 * c - a20 * s;
             out[1] = a01 * c - a21 * s;
             out[2] = a02 * c - a22 * s;
@@ -232,7 +246,7 @@ class Mat4:
 
 class Viewport:
     printer=None
-    quad = None 
+    quad = None
     base = None
     slice=None
     # Model object
@@ -242,15 +256,14 @@ class Viewport:
     glutAvailable=False
 
     def __init__(self):
+        global glutAvailable
         # init printer specs
         self.printer=Printer()
-        self.glutAvailable=bool(glutInit)
-        self.glutAvailable=False
 
-        if self.glutAvailable:
+        if glutAvailable:
             self.init_glut()
         else:
-            self.init_pygame()    
+            self.init_pygame()
 
         # Some things that where global in npm javascript version
         self.quad=self.makeQuad()
@@ -259,9 +272,9 @@ class Viewport:
         self.slice=self.makeSlice()
         glEnable(GL_DEPTH_TEST)
         self.draw()
-        
-        
-    def init_glut(self):    
+
+
+    def init_glut(self):
         glutInit()#sys.argv)
         #glutInitContextVersion( 3, 2 )
 
@@ -271,8 +284,8 @@ class Viewport:
 
         # Create a window, setting its title
         # https://noobtuts.com/python/opengl-introduction
-        glutInitWindowSize(self.windowsize[0],self.windowsize[1])    
-        glutInitWindowPosition(0,0)    
+        glutInitWindowSize(self.windowsize[0],self.windowsize[1])
+        glutInitWindowPosition(0,0)
         # self.window=
         glutCreateWindow('python port of hackathon-slicer')
 
@@ -283,19 +296,16 @@ class Viewport:
 
 
     def init_pygame(self):
+        import os
+        os.environ['SDL_VIDEO_WINDOW_POS'] ="0,40" # coord is postion of inner drawing surface, so leave room for window bar
         pygame.display.set_mode(self.windowsize, pygame.DOUBLEBUF | pygame.OPENGL | pygame.OPENGLBLIT)
-        pygame.display.set_caption('python port of hackathon-slicer (cv2)')
-        #self.cv2_title='python port of hackathon-slicer (cv2)'
-        #cv2.namedWindow(self.cv2_title, flags=cv2.WINDOW_GUI_NORMAL)#cv2.WINDOW_NORMAL)
-        #cv2.resizeWindow(self.cv2_title, self.windowsize[0], self.windowsize[1])
-        #cv2.moveWindow(self.cv2_title, 0,0);
-        print ("Glut Not Available.")
+        pygame.display.set_caption('python port of hackathon-slicer')
 
     def display(self):
         glutMainLoop()
         return
 
- 
+
     def buildShader(self,txt, type):
         #print ("buildShader",txt,type)
         s = glCreateShader(type)
@@ -342,15 +352,15 @@ class Viewport:
         v = Mat4.Create()
         v = Mat4.Scale(v,numpy.array([1, 1, 0.5]))
         v = Mat4.RotateX(v, self.scene['pitch'])
-        v = Mat4.RotateZ(v, self.scene['roll']) 
+        v = Mat4.RotateZ(v, self.scene['roll'])
         v = Mat4.Scale(v, numpy.array([1, 1, -1]))
         #v = Mat4.Scale(v, numpy.array([0.5, 0.5, -0.5]))
         return v
 
-        
+
     def modelMatrix(self):
         # We assume there is no rotation, because this port has no userinterface
-        m = Mat4.Create() #Creates a new identity mat4 
+        m = Mat4.Create() #Creates a new identity mat4
         m = Mat4.RotateZ(m, self.mesh['roll'])
         m = Mat4.RotateX(m, self.mesh['pitch'])
         m = Mat4.RotateY(m, self.mesh['yaw'])
@@ -358,8 +368,8 @@ class Viewport:
         out = Mat4.Create()
         out = Mat4.Mul(m, self.mesh['M'])
         return out
-        
-        
+
+
     def drawMesh(self,mesh):
         glUseProgram(self.mesh['prog'])
 
@@ -433,7 +443,7 @@ class Viewport:
         else:
             self.draw_pygame()
 
-    def draw_glut(self):        
+    def draw_glut(self):
         glClearColor(1, 1, 1, 1)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # clear the screen
 
@@ -455,20 +465,7 @@ class Viewport:
             self.drawQuad(self.quad)
 
         pygame.display.flip()
-        """
-        # Load the data from the framebuffer
-        img=numpy.empty([self.windowsize[0]*self.windowsize[1]*4],dtype=numpy.uint8) #data = new Uint8Array(printer.pixels() * 4)
-        glReadPixels(0, 0, 
-                      self.windowsize[0], self.windowsize[1], 
-                      GL_RGBA,
-                      GL_UNSIGNED_BYTE, img)
-
-        img=img.reshape([self.windowsize[0],self.windowsize[1],4])
-        img=cv2.flip(img,0)
-        cv2.imshow(self.cv2_title,img)
-        cv2.waitKey(1) # make it show the image
-        """
-
+        pygame.event.pump()
 
     def makeQuad(self):
         quad = {}
@@ -490,7 +487,7 @@ class Viewport:
 
         quad['frac'] = 0.5
         return quad
-    
+
 
     def makeBase(self):
         base = {}
@@ -512,7 +509,7 @@ class Viewport:
 
         base['frac'] = 0.5
         return base
-  
+
 
     def makeSlice(self):
         # all these create methods are WebGL specific
@@ -543,7 +540,7 @@ class Viewport:
     def getMeshBounds(self):
         M = self.modelMatrix()
 
-        points=self.mesh['verts'] 
+        points=self.mesh['verts']
         out=Mat4.MulV3s(M,points)
         x = out[:, 0]
         y = out[:, 1]
@@ -584,11 +581,11 @@ class Viewport:
         # Recalculate mesh bounds with the transform matrix
         self.getMeshBounds()
 
-    
+
     def loadMesh(self,points,normals,cmin,cmax):
         # https://www.opengl.org/discussion_boards/showthread.php/183305-How-to-use-glDrawArrays%28%29-with-VBO-Vertex-Buffer-Object-to-display-stl-geometry
         # points = [ [x,y,z], [a,b,c],....]
-        
+
         # Store model min and max bounds
         self.mesh['bounds']={}
         #print ("cmin",cmin)
@@ -663,7 +660,7 @@ class Viewport:
         sliceFbo = self.slice['fbo'] #glGenFramebuffers(1)
         glBindFramebuffer(GL_FRAMEBUFFER, sliceFbo)
         #glBindBuffer(GL_ARRAY_BUFFER, self.modelPtBufferIdx)
-        
+
         # Attach our output texture
         glFramebufferTexture2D(
             GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
@@ -687,19 +684,19 @@ class Viewport:
         glUniformMatrix4fv(self.slice['uniform']['model'],1, False, self.modelMatrix())
 
         # Load slice position and mesh bounds
-        glUniform1f(self.slice['uniform']['frac'], 
+        glUniform1f(self.slice['uniform']['frac'],
                     self.quad['frac'])
-        glUniform1f(self.slice['uniform']['aspect'], 
+        glUniform1f(self.slice['uniform']['aspect'],
                     self.printer.aspectRatio())
-        glUniform2f(self.slice['uniform']['bounds'], 
-                    self.mesh['bounds']['zmin'], 
+        glUniform2f(self.slice['uniform']['bounds'],
+                    self.mesh['bounds']['zmin'],
                     self.mesh['bounds']['zmax'])
 
         # Load mesh vertices
         glBindBuffer(GL_ARRAY_BUFFER, self.mesh['vert'])
         glEnableVertexAttribArray(self.mesh['attrib']['v'])
         glVertexAttribPointer(self.mesh['attrib']['v'], 3, GL_FLOAT, False, 0, None)
-        
+
         # Draw twice, adding and subtracting values in the stencil buffer
         # based on the handedness of faces that we encounter
         glStencilFunc(GL_ALWAYS, 0, 0xFF)
@@ -715,17 +712,17 @@ class Viewport:
         glClear(GL_COLOR_BUFFER_BIT)
 
         # Draw again, discarding samples if the stencil buffer != 0
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP, GL_KEEP)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)#, GL_KEEP)
         glStencilFunc(GL_NOTEQUAL, 0, 0xFF)
         glDrawArrays(GL_TRIANGLES, 0, self.mesh['triangles'])
 
         # Load the data from the framebuffer
         data=numpy.empty([self.printer.pixels()*4],dtype=numpy.uint8) #data = new Uint8Array(printer.pixels() * 4)
-        glReadPixels(0, 0, 
-                      self.printer.resolution['x'], self.printer.resolution['y'], 
+        glReadPixels(0, 0,
+                      self.printer.resolution['x'], self.printer.resolution['y'],
                       GL_RGBA,
                       GL_UNSIGNED_BYTE, data)
-        
+
         # Restore the default framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
         glEnable(GL_DEPTH_TEST)

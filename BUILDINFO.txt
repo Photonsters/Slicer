@@ -1,11 +1,11 @@
 Python 3.7 does not work yet with cx_Freeze!
 
 0) setup python:
-    - Use Python3.6 (amd64 for 64 bits systems; 
-    - Install cython, numpy, opencv, cx_freeze using 
+    - Use Python3.6 (amd64 for 64 bits systems;
+    - Install cython, numpy, opencv, pygame, cx_freeze using 
         pip install ... --user
-            or 
-        download wheels for P3.6 and amd64 on:    
+            or
+        download wheels for P3.6 and amd64 on:
           https://www.lfd.uci.edu/~gohlke/pythonlibs/#opencv
           pip install ...
 
