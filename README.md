@@ -13,7 +13,7 @@ Not yet ready:
 
 ## Installation
 
-'Win64/' contains the install files for Windows 64-bits using graphical progress. Just unpack and run! If you want to have your progress info as plain text, replace PhotonSlicer.exe with the file in Con64/.  
+'Win64/' contains the install files for Windows 64-bits returning your slicing progress in a window. Just unpack and run! If you want to have your progress info displayed as plain text, replace PhotonSlicer.exe with the file in Con64/.  
 
 For Linux and OSX you have to install python and some libraries (Cython, numpy, opencv-python, PyOpenGL, PyOpenGL-accelerate, Pygame if glut not available).
 
