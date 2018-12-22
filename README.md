@@ -25,7 +25,6 @@ You can test your install with:
 - **Linux & MeshMixer**: First make sure you already have Wine installed and use it to run MeshMixer 3.3. You should unpack the 'Win64/' 7Z files from the repository to e.g. 'Program Files'. You can test your it with:
   `wine photonslicer.exe -s STLs\legocog.stl -g True -f False`
 
----
 
 ## Setup MeshMixer
 1. Install MeshMixer (Linux users: First install Wine and install MeshMixer in Wine)
