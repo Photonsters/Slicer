@@ -13,11 +13,17 @@ Not yet ready:
 
 ## Installation
 
-'Win64/' contains the install files for Windows 64-bits returning your slicing progress in a window. Just unpack and run! If you want to have your progress info displayed as plain text, replace PhotonSlicer.exe with the file in Con64/.  
+Download the repository. Depending on your setup do one of the following:
 
-For Linux and OSX you have to install python and some libraries (Cython, numpy, opencv-python, PyOpenGL, PyOpenGL-accelerate, Pygame if glut not available).
+- 'Win64/' contains the 7Z files for Windows 64-bits returning your slicing progress in a window. Just unpack and run! If you want to have your progress info displayed as plain text, replace PhotonSlicer.exe with the file in Con64/.  
+You can test your install with:
+  `photonslicer.exe -s STLs\legocog.stl -g True -f False`
 
-For Linux/MeshMixer user: You should already have wine up and running to use MeshMixer. You should install the Win64/ Zip files for PhotonSlicer in Wine too.
+- For Linux and OSX you have to install python and some libraries (Cython, numpy, opencv-python, PyOpenGL, PyOpenGL-accelerate, Pygame if glut not available). To test it:
+  `python3 photonslicer.py -s STLs\legocog.stl -g True -f False`
+
+- For Linux/MeshMixer user: First make sure you already have Wine installed and use it to run MeshMixer 3.3. You should unpack the 'Win64/' 7Z files from the repository to e.g. 'Program Files'. You can test your it with:
+  `wine photonslicer.exe -s STLs\legocog.stl -g True -f False`
 
 ---
 
