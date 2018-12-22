@@ -58,6 +58,10 @@ You can add an extra 'printer' for each resin / settings combo you need.
 If you don't see a progress window and now file is added to 'C:/Program Files/PhotonSlicer/STLs/photon' check 'C:/Program Files/PhotonSlicer/log.txt' for error messages.
 
 
+## YouTube tutorial
+[![Tutorial](https://img.youtube.com/vi/KInOvXrpWXY/0.jpg)](https://www.youtube.com/watch?v=KInOvXrpWXY)
+
+
 ## MeshMixer Full Workflow
 
 1. Open an STL file, check if fits the build volume and is not below it.
