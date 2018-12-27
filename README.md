@@ -42,7 +42,7 @@ You can test your install with:
     - Printer software name : 'Photon Slicer'
     - Printer software path : 'C:/Program Files/PhotonSlicer/PhotonSlicer.exe'
     - Format of file to ... : 'STL'
-    - Command line artuments: '-g True -f False -e folder -l 0.05 -o 6 -t 8 -be 90 -bl 8 -p "C:/Program Files/PhotonSlicer/STLs/photon" -s'      
+    - Command line arguments: '-g True -f False -e folder -l 0.05 -o 6 -t 8 -be 90 -bl 8 -p "C:/Program Files/PhotonSlicer/STLs/photon" -s'      
 8. Close window 'Printer Properties'
 9. Close window 'Preferences'
 
