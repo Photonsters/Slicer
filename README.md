@@ -139,3 +139,4 @@ optional arguments:
                         if argument is 'folder' a file browser will open
 
 ```
+Kudos to @mkeeter @fros1y @enov for the inspirational work and permissive license on the [Hackaton Slicer](https://github.com/Formlabs/hackathon-slicer)
