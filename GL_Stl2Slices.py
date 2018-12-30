@@ -202,22 +202,65 @@ class GL_Stl2Slices:
         #self.viewport.display() # this will loop until window is closed
         self.viewport.draw()
 
-        microns = layerheight*1000 #document.getElementById("height").value;
-        bounds = self.viewport.getBounds()
-        #print ((bounds['zmax']-bounds['zmin']) , self.viewport.printer.getGLscale())
-        #quit()
-        zrange_mm=(bounds['zmax']-bounds['zmin']) / self.viewport.printer.getGLscale()
-        count=math.ceil(zrange_mm * 1000 / microns);        
-        #print ("b",bounds)
-        #print ("z",zrange_mm)
-        #print ("m",microns)
-        #print ("c",count)
  
+        # Create list with slice heights and exposures
+        sliceheights=[]
+        exposures=[]
+        # Check if layerheight is filename or number/float:
+        adaptiveLayers=False
+        try: 
+            layerheight=float(layerheight)
+        except: 
+            adaptiveLayers=True  
+        # a) if File we make slices from heights in files
+        if adaptiveLayers:
+            with open(layerheight) as f:
+                lines = f.readlines()
+            # Make sure that we start at rel height 0
+            firstLine=lines[0]
+            lastLine=lines[len(lines)-1]
+            firstH=float(firstLine.split()[0])
+            lastH=float(lastLine.split()[0])
+            # Store first layerheight for header
+            layerheight=float(firstLine.split()[1])            
+            if firstH!=0:
+                print ("Layer Heights file does not start at height 0.")
+                sys.exit()
+            # Make sure that we end at rel height 1
+            if not lastH==1.0:
+                print ("Layer Heights file does not end at height 0.")
+                sys.exit()
+            # Process all lines
+            nrs=lines[0].split()
+            (prevRelY,prevSliceH,prevExposure) = (float(nrs[0]),float(nrs[1]),float(nrs[2]))                
+            for line in lines:
+                nrs=line.split()
+                (relY, sliceH, exposure) = (float(nrs[0]),float(nrs[1]),float(nrs[2]))
+                for y in range(int(prevRelY*1000),int(relY*1000),int(prevSliceH*1000)):
+                    sliceheights.append(y/1000) 
+                    exposures.append(prevExposure)
+                (prevRelY,prevSliceH,prevExposure)=(relY, sliceH, exposure)                
+            # Add last height/exposure
+            sliceheights.append(relY) 
+            exposures.append(exposure)
+        # b) If not file we received sliceheight in mm and use this to make slices
+        else:
+            microns = layerheight*1000 #document.getElementById("height").value;
+            bounds = self.viewport.getBounds()
+            zrange_mm=(bounds['zmax']-bounds['zmin']) / self.viewport.printer.getGLscale()
+            count=math.ceil(zrange_mm * 1000 / microns);        
+            for i in range(0,count):
+                relheight=i/count
+                sliceheights.append(relheight)
+            sliceheights.append(1)
+
+        # Create (image of) model slice for each height in list
         if not photonfilename==None:
             rlestack=[]
-
-        for i in range(0,count):
-            data = self.viewport.getSliceAt(i / count)
+        for h in sliceheights:
+            data = self.viewport.getSliceAt(h)
+        #for i in range(0,count):
+            #data = self.viewport.getSliceAt(i / count)
             img=data.reshape(2560,1440,4)
             imgarr8=img[:,:,1]
             if photonfilename==None:            
@@ -229,7 +272,7 @@ class GL_Stl2Slices:
                 img1D=imgarr8.flatten(0)
                 rlestack.append(rleEncode.encodedBitmap_Bytes_numpy1DBlock(img1D))
 
-
+        # Put images in photonfile if user specified this
         if not photonfilename==None:
             tempfilename=os.path.join(self.installpath,"newfile.photon")
             photonfile=PhotonFile(tempfilename)
@@ -240,6 +283,14 @@ class GL_Stl2Slices:
             photonfile.Header["# Bottom Layers"]  = PhotonFile.int_to_bytes(bottomlayers)
             photonfile.Header["Off time (s)"]     = PhotonFile.float_to_bytes(offtime)
             photonfile.replaceBitmaps(rlestack)
+ 
+           # If multiple layerheights we adjust photon file for this
+            if adaptiveLayers:
+                #nLayers=photonfile.nrLayers()
+                for layerNr,(layerheight,exposure) in enumerate(zip(sliceheights,exposures)):
+                   photonfile.LayerDefs[layerNr]["Layer height (mm)"] =PhotonFile.float_to_bytes(layerheight)
+                   photonfile.LayerDefs[layerNr]["Exp. time (s)"] =PhotonFile.float_to_bytes(exposure)
+
             photonfile.writeFile(photonfilename)
 
         print("Elapsed: ", "%.2f" % (time.time() - t1), "secs")

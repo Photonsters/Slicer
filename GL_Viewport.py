@@ -1,7 +1,9 @@
 # Port of https:#github.com/Formlabs/hackathon-slicer/blob/master/app/js/viewport.js
 #
-# Windows Error 'glutInit undefined': If glutInit not found we must use pygame
-
+# Bugs:
+#  are models imported at correct scale? (legocog.stl @ 0.05 produces only a few layers)
+#  if glutAvailable we still rely on pygame functions.... remove this reliability
+#
 #external
 import OpenGL
 from OpenGL.GL import *
@@ -17,11 +19,12 @@ import cv2
 
 #Test if glutInit available, if not we want to use pygame
 #Even if bool(glutInit) wil return True the call on glutInit might still fail
-glutAvailable=True
+glutAvailable=False #True
 try:
     glutInit()
 except Exception:
     glutAvailable=False
+
 if not glutAvailable:
     print ("GLUT is not available.")
     try:

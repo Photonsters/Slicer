@@ -159,7 +159,7 @@ class Svg2Slices:
 
 
 		if not self.gui: print () # close progress stdout and go to new line
-		                    
+	                    
 		if not photonfilename==None:
 		    tempfilename=os.path.join(self.installpath,"newfile.photon")
 		    photonfile=PhotonFile(tempfilename)
