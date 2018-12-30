@@ -110,7 +110,7 @@ if 'bdist_msi' in sys.argv:
     sys.argv += ['--initial-target-dir', 'c:\PhotonSlicer']
 
 setup(  name = "PhotonSlicer_GUI",
-        version = "0.1",
+        version = "0.2",
 	    author= "Photonsters",
 	    url="https://github.com/Photonsters",
         description = "Converts STL (binary) files to Images or PhotonFile.",
