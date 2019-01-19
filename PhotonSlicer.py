@@ -31,6 +31,7 @@ import re       # needed for case insentive replace
 from Stl2Slices import *
 from Svg2Slices import *
 from GL_Stl2Slices import *
+from Png2Photon import *
 
 filename=None
 outputpath=None
@@ -86,6 +87,14 @@ def is_valid_file(arg):
             raise argparse.ArgumentTypeError('filedialog only available in GUI mode.')
 
     arg=os.path.normpath(arg) # convert all / to \ for windows and vv for linux
+
+    # check for directory with png filelist
+    if arg[-5:]=="*.png":
+        if os.path.isdir(arg[:-5]):
+          filename = arg
+          return filename
+
+    # check for stl or svg fuke
     if not os.path.isfile(arg):
         raise argparse.ArgumentTypeError("filename argument ('"+arg+"') does not point to valid STL/SVG file")
     elif not (arg[-4:].lower()==".stl" or arg[-4:].lower()==".svg"):
@@ -242,12 +251,14 @@ ap = argparse_logger(description=
                              "          PhotonSlicer.exe -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..\n"
                              "          PhotonSlicer.exe -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..\n"
                              "          PhotonSlicer.exe -s dialog -p dialog -g True -f False    -> full GUI is used\n"
+                             "          PhotonSlicer.exe -s ./Slices/*.png -p /home/myfile.photon\n"
                              ,formatter_class=argparse.RawTextHelpFormatter)
 
 ap.add_argument("-s","--filename",
                 required=True,
-                help="name of (binary) stl or svg file to import\n"+
-                     "'dialog' for dialog to select stl file (only in GUI mode) OR\n")
+                help="name of (binary) stl or svg file to import OR\n"+
+                     "'dialog' for dialog to select stl file (only in GUI mode) OR\n"
+                     "path/*.png to create photon file from presliced images.")
 ap.add_argument("-p","--photonfilename",
                 #type=str,
                 help="photon file name (ends with '.photon') OR \n"+
@@ -258,16 +269,8 @@ ap.add_argument("-p","--photonfilename",
                      "'images' to generate images in directory with same name as stl\n"+
                      "these can be combined e.g. './subdir/photon'")
 ap.add_argument("-l","--layerheight",
-                default=0.05,#type=float,
-                help="layer height in mm OR \n"+
-                     "filename with layerheights with following format: \n"+
-                     "  - each line has relative Y (0.0-1.0) and layerheight\n"+
-                     "  - to use until next relative Y in next line.\n"+
-                     "  e.g.: 0.0 0.05\n"+
-                     "        0.2 0.02\n"+
-                     "        0.8 0.05\n"+
-                     "        1.0 0.05\n"+
-                     "  ONLY WORKS IN OPENGL mode with STL FILES (NOT SVG-FILES)")
+                default=0.05,type=float,
+                help="layer height in mm")
 ap.add_argument("-r", "--rescale", type=float, required=False,
                 help="scales model and offset")
 ap.add_argument("-t", "--exposure", required=False,
@@ -319,7 +322,7 @@ is_valid_output(pf)
 # set values for optional arguments
 scale = float(args["rescale"]) if args["rescale"] else 1.0
 if scale==0.0: scale=1.0
-layerheight = args["layerheight"]#float(args["layerheight"])
+layerheight = float(args["layerheight"])
 normalexposure = float(args["exposure"])
 bottomexposure = float(args["bottomexposure"])
 bottomlayers = int(args["bottomlayers"])
@@ -332,14 +335,23 @@ if not forceCPU and not gui: #default is false, so user explicitly set it to Tru
     print ("You cannot use opengl without gui.")
     sys.exit()
 
+if filetype == ".png":
+    # we have presliced png files
+    P2P=Png2Photon(pngfolder=filename,
+                   photonfilename=outputfile,
+                   layerheight=layerheight,
+                   normalexposure=normalexposure,
+                   bottomexposure=bottomexposure,
+                   bottomlayers=bottomlayers,
+                   offtime=offtime,
+                   gui=gui
+                   )
+
 if filetype == ".svg":
-    if not isinstance(layerheight,float):
-        print ("With svg input you cannot use a file with layerheights.")
-        sys.exit()
     S2I=Svg2Slices(svgfilename=filename,
                    outputpath=outputpath,
                    photonfilename=outputfile,
-                   layerheight=float(layerheight),
+                   layerheight=layerheight,
                    scale=scale,
                    normalexposure=normalexposure,
                    bottomexposure=bottomexposure,
@@ -349,13 +361,10 @@ if filetype == ".svg":
                    )
 elif filetype == ".stl":
     if forceCPU:
-        if not isinstance(layerheight,float):
-            print ("In CPU mode you cannot use a file with layerheights.")
-            sys.exit()
         S2I=Stl2Slices(stlfilename=filename,
                    outputpath=outputpath,
                    photonfilename=outputfile,
-                   layerheight=float(layerheight),
+                   layerheight=layerheight,
                    scale=scale,
                    normalexposure=normalexposure,
                    bottomexposure=bottomexposure,
