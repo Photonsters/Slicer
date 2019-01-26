@@ -271,13 +271,18 @@ ap.add_argument("-p","--photonfilename",
 ap.add_argument("-l","--layerheight",
                 default=0.05,#type=float,
                 help="layer height in mm OR \n"+
-                     "filename with layerheights with following format: \n"+
-                     "  - each line has relative Y (0.0-1.0) and layerheight\n"+
-                     "  - to use until next relative Y in next line.\n"+
-                     "  e.g.: 0.0 0.05\n"+
-                     "        0.2 0.02\n"+
-                     "        0.8 0.05\n"+
-                     "        1.0 0.05\n"+
+                     "filename with layerheights with following format:\n"+
+                     "  Number of bottom layers, bottom sliceheight and bottom exposure\n"+
+                     "  each on a separate line. This is followed by a line for each\n"+
+                     "  new height setting which starts with relative Y (0.0-1.0) and\n"+
+                     "  is followed by layerheight and exposure. First line should start\n"+
+                     "  at relative Y=0.0 and last line should stop at relative Y=1.0 \n"+
+                     "  e.g.: 8            # nr bottom layers\n"+
+                     "        0.05         # bottom layer height\n"+
+                     "        90           # bottom exposure time\n"+
+                     "        0.0 0.05 8   # Y=0%% layerheight=0.05mm exposure=8sec\n"+
+                     "        0.5 0.10 12  # use this from 50%% to 100%%\n"+
+                     "        1.0 0.05 8   # close settings\n"+
                      "  ONLY WORKS IN OPENGL mode with STL FILES (NOT SVG-FILES)")
 ap.add_argument("-r", "--rescale", type=float, required=False,
                 help="scales model and offset")

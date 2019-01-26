@@ -100,7 +100,9 @@ examples: PhotonSlicer.exe -s ./STLs/Cube.stl                         -> ./STLs/
 optional arguments:
   -h, --help            show this help message and exit
   -s STLFILENAME, --stlfilename STLFILENAME
-                        name of (binary) stl file to import
+                        name of (binary) stl or svg file to import OR
+                        'dialog' for dialog to select stl file (only in GUI mode) OR
+                        path/*.png to create photon file from presliced images.
   -p PHOTONFILENAME, --photonfilename PHOTONFILENAME
                         photon file name (ends with '.photon') OR
                         output directory (ends with '/') for images OR
@@ -110,7 +112,20 @@ optional arguments:
                         'images' to generate images in directory with same name as stl
                         these can be combined e.g. './subdir/photon'
   -l LAYERHEIGHT, --layerheight LAYERHEIGHT
-                        layer height in mm
+                        layer height in mm OR
+                        filename with layerheights with following format:
+                        Number of bottom layers, bottom sliceheight and bottom exposure
+                        each on a separate line. This is followed by a line for each
+                        new height setting which starts with relative Y (0.0-1.0) and
+                        is followed by layerheight and exposure. First line should start
+                        at relative Y=0.0 and last line should stop at relative Y=1.0                        
+                          e.g.: 8            # nr bottom layers
+                                0.05         # bottom layer height
+                                90           # bottom exposure time
+                                0.0 0.05 8   # Y=0% layerheight=0.05 exposure=8
+                                0.5 0.10 12
+                                1.0 0.05 8  
+                          ONLY WORKS IN OPENGL mode with STL FILES (NOT SVG-FILES)
   -r RESCALE, --rescale RESCALE
                         scales model and offset
   -t EXPOSURE, --exposure EXPOSURE
@@ -128,5 +143,7 @@ optional arguments:
                         execute command when done
                         'photon' will be replace with output filename
                         if argument is 'folder' a file browser will open
+  -v VERBOSE, --verbose VERBOSE
+                        verbose output                        
 
 ```
