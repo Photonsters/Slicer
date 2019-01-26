@@ -1,5 +1,22 @@
-0.00 0.05 12
-0.30 0.10 18
-0.75 0.05 12
-0.80 0.10 18
+# This section is for build plate adhesion and should specify per line:
+#   nr_bottom layers
+#   slice_height_for_bottom
+#   bottom_exposure
+
+8	# nr bottom layers
+0.05    # bottom sliceheight
+90	# bottom exposure
+
+# Following section specifies model settings per height range
+# Each line specifies relative height to use new layer_height and exposure.
+# Line format: 
+#   relative_height  layer_height  exposure
+# First line should start with relative_height=0.0
+# Last line should start with relative_height=1.0
+# Settings of first line will be ignored for bottom layers
+
+0.00 0.05 12 
+0.20 0.10 24
+0.60 0.20 36
+0.80 0.10 8
 1.00 0.05 12
