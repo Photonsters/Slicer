@@ -36,7 +36,7 @@ class Svg2Slices:
 		if gui:
 			import tkinter as tk
 			from tkinter import ttk
-			# Construct window            
+			# Construct window
 			self.popup = tk.Tk()#tk.Toplevel()
 			self.popup.geometry('240x32')
 			# Set window icon
@@ -130,14 +130,14 @@ class Svg2Slices:
 				# Center numpy array of points which is returned for fast OGL model loading
 				pPoly = pPoly + trans
 				# Fill poly
-				cv2.fillPoly(img, numpy.array([pPoly],dtype='int32'), color=innerColor)                    
+				cv2.fillPoly(img, numpy.array([pPoly],dtype='int32'), color=innerColor)
 
 			if photonfilename==None:
 				cv2.imwrite(filename, img)
 			else:
 				imgarr8 = img
 				img1D=imgarr8.flatten(0)
-				rlestack.append(rleEncode.encodedBitmap_Bytes_numpy1DBlock(img1D))    
+				rlestack.append(rleEncode.encodedBitmap_Bytes_numpy1DBlock(img1D))
 
 			# Show progress in terminal
 			if not self.gui:
@@ -159,7 +159,7 @@ class Svg2Slices:
 
 
 		if not self.gui: print () # close progress stdout and go to new line
-	                    
+
 		if not photonfilename==None:
 		    tempfilename=os.path.join(self.installpath,"newfile.photon")
 		    photonfile=PhotonFile(tempfilename)

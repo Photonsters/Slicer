@@ -239,7 +239,7 @@ if gui:
 # construct the argument parse and parse the arguments
 ap = argparse_logger(description=
 #ap = argparse.ArgumentParser(description=
-                             "version    : December 2, 2018 \n" +
+                             "version    : January 26, 2019 \n" +
                              #"0123456789001234567890012345678900123456789001234567890012345678900123456789001234567890\n"+
                              "description: Slices a STL (binary) or Slic3r SVG file to images or a photon file.\n"
                              "\n"+
@@ -269,8 +269,16 @@ ap.add_argument("-p","--photonfilename",
                      "'images' to generate images in directory with same name as stl\n"+
                      "these can be combined e.g. './subdir/photon'")
 ap.add_argument("-l","--layerheight",
-                default=0.05,type=float,
-                help="layer height in mm")
+                default=0.05,#type=float,
+                help="layer height in mm OR \n"+
+                     "filename with layerheights with following format: \n"+
+                     "  - each line has relative Y (0.0-1.0) and layerheight\n"+
+                     "  - to use until next relative Y in next line.\n"+
+                     "  e.g.: 0.0 0.05\n"+
+                     "        0.2 0.02\n"+
+                     "        0.8 0.05\n"+
+                     "        1.0 0.05\n"+
+                     "  ONLY WORKS IN OPENGL mode with STL FILES (NOT SVG-FILES)")
 ap.add_argument("-r", "--rescale", type=float, required=False,
                 help="scales model and offset")
 ap.add_argument("-t", "--exposure", required=False,
@@ -322,7 +330,7 @@ is_valid_output(pf)
 # set values for optional arguments
 scale = float(args["rescale"]) if args["rescale"] else 1.0
 if scale==0.0: scale=1.0
-layerheight = float(args["layerheight"])
+layerheight = args["layerheight"]#float(args["layerheight"])
 normalexposure = float(args["exposure"])
 bottomexposure = float(args["bottomexposure"])
 bottomlayers = int(args["bottomlayers"])
@@ -348,6 +356,9 @@ if filetype == ".png":
                    )
 
 if filetype == ".svg":
+    if not isinstance(layerheight,float):
+        print ("With svg input you cannot use a file with layerheights.")
+        sys.exit()
     S2I=Svg2Slices(svgfilename=filename,
                    outputpath=outputpath,
                    photonfilename=outputfile,
@@ -359,12 +370,16 @@ if filetype == ".svg":
                    offtime=offtime,
                    gui=gui
                    )
-elif filetype == ".stl":
+
+if filetype == ".stl":
     if forceCPU:
+        if not isinstance(layerheight,float):
+            print ("In CPU mode you cannot use a file with layerheights.")
+            sys.exit()
         S2I=Stl2Slices(stlfilename=filename,
                    outputpath=outputpath,
                    photonfilename=outputfile,
-                   layerheight=layerheight,
+                   layerheight=float(layerheight),
                    scale=scale,
                    normalexposure=normalexposure,
                    bottomexposure=bottomexposure,
@@ -372,7 +387,6 @@ elif filetype == ".stl":
                    offtime=offtime,
                    gui=gui
                    )
-
     else: #use GPU/OpenGL
         S2I=GL_Stl2Slices(stlfilename=filename,
                    outputpath=outputpath,

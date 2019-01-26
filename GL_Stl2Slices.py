@@ -131,6 +131,7 @@ class GL_Stl2Slices:
         z = np_points[:, 2]
         self.cmin = (x.min(), y.min(), z.min())
         self.cmax = (x.max(), y.max(), z.max())
+        self.modelheight = self.cmax[2] - self.cmin[2]
 
         # align coordinates on grid
         # this will reduce number of points and speed up loading
@@ -187,14 +188,14 @@ class GL_Stl2Slices:
            sizestr="("+str(int(size[0]))+"x"+str(int(size[2]))+")"
            areastr="(65x115)"
            errmsg="Model is too big "+sizestr+" for build area "+areastr+". Maybe try another orientation, use the scale argument (-s or --scale) or cut up the model."
-           if not self.gui: 
+           if not self.gui:
               print (errmsg)
            else:
               sys.tracebacklimit = None
               raise Exception(errmsg)
               sys.tracebacklimit = 0
            sys.exit() # quit() does not work if we make this an exe with cx_Freeze
-    
+
 
         # Load mesh
         #print ("loading mesh")
@@ -202,27 +203,39 @@ class GL_Stl2Slices:
         #self.viewport.display() # this will loop until window is closed
         self.viewport.draw()
 
- 
         # Create list with slice heights and exposures
         sliceheights=[]
         exposures=[]
         # Check if layerheight is filename or number/float:
         adaptiveLayers=False
-        try: 
+        try:
             layerheight=float(layerheight)
-        except: 
-            adaptiveLayers=True  
+        except:
+            adaptiveLayers=True
         # a) if File we make slices from heights in files
         if adaptiveLayers:
             with open(layerheight) as f:
-                lines = f.readlines()
+                tmplines = f.readlines()
+            # remove all comments and black/empty lines
+            lines=[]
+            for line in tmplines:
+              l=line.split("#")[0]
+              l=l.strip()
+              if l: lines.append(l)
+
+            #file overrules vars for bottomlayers, bottomexposure and normal exposure
+            bottomlayers=int(lines[0])
+            bottomlayerheight=float(lines[1])/self.modelheight # convert layerheight to a relative layer height
+            bottomexposure=int(lines[2])
+            #print ("self.modelheight",self.modelheight)
+
             # Make sure that we start at rel height 0
-            firstLine=lines[0]
+            firstLine=lines[3]
             lastLine=lines[len(lines)-1]
             firstH=float(firstLine.split()[0])
             lastH=float(lastLine.split()[0])
             # Store first layerheight for header
-            layerheight=float(firstLine.split()[1])            
+            layerheight=float(firstLine.split()[1])
             if firstH!=0:
                 print ("Layer Heights file does not start at height 0.")
                 sys.exit()
@@ -230,25 +243,34 @@ class GL_Stl2Slices:
             if not lastH==1.0:
                 print ("Layer Heights file does not end at height 0.")
                 sys.exit()
-            # Process all lines
-            nrs=lines[0].split()
-            (prevRelY,prevSliceH,prevExposure) = (float(nrs[0]),float(nrs[1]),float(nrs[2]))                
-            for line in lines:
+
+            # First set slices for bottom layers
+            relY_bottom=bottomlayers*bottomlayerheight
+            relY_bottom1000=1000*relY_bottom
+            for y in range(0,int(relY_bottom*1000),int(bottomlayerheight*1000)):
+                sliceheights.append(y/1000)
+                exposures.append(bottomexposure)
+
+            # Process all lines, converting layerheight to a relative layer height
+            (prevRelY,prevSliceH,prevExposure) = (bottomlayers,bottomlayerheight,bottomexposure)
+            for line in lines[3:]:
                 nrs=line.split()
-                (relY, sliceH, exposure) = (float(nrs[0]),float(nrs[1]),float(nrs[2]))
+                (relY, sliceH, exposure) = (float(nrs[0]),float(nrs[1])/self.modelheight,float(nrs[2])) # convert layerheight to a relative layer height
                 for y in range(int(prevRelY*1000),int(relY*1000),int(prevSliceH*1000)):
-                    sliceheights.append(y/1000) 
-                    exposures.append(prevExposure)
-                (prevRelY,prevSliceH,prevExposure)=(relY, sliceH, exposure)                
+                    if y>relY_bottom1000: # ignore settings/slices below bottomlayers
+                        sliceheights.append(y/1000)
+                        exposures.append(prevExposure)
+                (prevRelY,prevSliceH,prevExposure)=(relY, sliceH, exposure)
             # Add last height/exposure
-            sliceheights.append(relY) 
+            sliceheights.append(relY)
             exposures.append(exposure)
+
         # b) If not file we received sliceheight in mm and use this to make slices
         else:
             microns = layerheight*1000 #document.getElementById("height").value;
             bounds = self.viewport.getBounds()
             zrange_mm=(bounds['zmax']-bounds['zmin']) / self.viewport.printer.getGLscale()
-            count=math.ceil(zrange_mm * 1000 / microns);        
+            count=math.ceil(zrange_mm * 1000 / microns);
             for i in range(0,count):
                 relheight=i/count
                 sliceheights.append(relheight)
@@ -263,11 +285,11 @@ class GL_Stl2Slices:
             #data = self.viewport.getSliceAt(i / count)
             img=data.reshape(2560,1440,4)
             imgarr8=img[:,:,1]
-            if photonfilename==None:            
+            if photonfilename==None:
 	            Sstr = "%04d" % i
-	            filename = outputpath+Sstr + ".png"            
+	            filename = outputpath+Sstr + ".png"
 	            print (i,"/",count,filename)
-	            cv2.imwrite(filename, imgarr8)  
+	            cv2.imwrite(filename, imgarr8)
             else:
                 img1D=imgarr8.flatten(0)
                 rlestack.append(rleEncode.encodedBitmap_Bytes_numpy1DBlock(img1D))
@@ -283,13 +305,13 @@ class GL_Stl2Slices:
             photonfile.Header["# Bottom Layers"]  = PhotonFile.int_to_bytes(bottomlayers)
             photonfile.Header["Off time (s)"]     = PhotonFile.float_to_bytes(offtime)
             photonfile.replaceBitmaps(rlestack)
- 
+
            # If multiple layerheights we adjust photon file for this
             if adaptiveLayers:
                 #nLayers=photonfile.nrLayers()
                 for layerNr,(layerheight,exposure) in enumerate(zip(sliceheights,exposures)):
-                   photonfile.LayerDefs[layerNr]["Layer height (mm)"] =PhotonFile.float_to_bytes(layerheight)
-                   photonfile.LayerDefs[layerNr]["Exp. time (s)"] =PhotonFile.float_to_bytes(exposure)
+                   photonfile.LayerDefs[layerNr]["Layer height (mm)"] = PhotonFile.float_to_bytes(layerheight*self.modelheight)
+                   photonfile.LayerDefs[layerNr]["Exp. time (s)"] = PhotonFile.float_to_bytes(exposure)
 
             photonfile.writeFile(photonfilename)
 

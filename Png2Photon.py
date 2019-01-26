@@ -63,6 +63,8 @@ class Png2Photon:
             # Read image
 			filepath=os.path.join(pngfolder[:-5],file)
 			img = cv2.imread(filepath)
+			# print (sliceNr,file,filepath)
+			# print (img.shape)
 
             # Check if 8 image-depth
 			"""
@@ -73,10 +75,9 @@ class Png2Photon:
 			"""
 
 			#Encode image
-			imgarr8 = img
+			imgarr8=img[:,:,1]
 			img1D=imgarr8.flatten(0)
 			rlestack.append(rleEncode.encodedBitmap_Bytes_numpy1DBlock(img1D))
-			sliceNr=sliceNr+1
 
 			# Show progress in terminal
 			if not self.gui:
