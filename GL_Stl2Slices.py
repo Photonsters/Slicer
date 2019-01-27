@@ -316,3 +316,5 @@ class GL_Stl2Slices:
             photonfile.writeFile(photonfilename)
 
         print("Elapsed: ", "%.2f" % (time.time() - t1), "secs")
+        self.viewport.destroy()
+        self.viewport=None

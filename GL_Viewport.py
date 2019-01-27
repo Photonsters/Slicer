@@ -23,7 +23,7 @@ try:
 except Exception:
     glutAvailable=False
 if not glutAvailable:
-    print ("GLUT is not available.")
+    #print ("GLUT is not available.")
     try:
         import contextlib
         with contextlib.redirect_stdout(None):
@@ -278,9 +278,9 @@ class Viewport:
         self.base=self.makeBase()
         self.scene={"roll": 45+math.pi/2, "pitch": 45}
         self.slice=self.makeSlice()
+        self.mesh = {"loaded": False}
         glEnable(GL_DEPTH_TEST)
         self.draw()
-
 
     def init_glut(self):
         glutInit()#sys.argv)
@@ -295,13 +295,12 @@ class Viewport:
         glutInitWindowSize(self.windowsize[0],self.windowsize[1])
         glutInitWindowPosition(0,0)
         # self.window=
-        glutCreateWindow('python port of hackathon-slicer')
+        self.glutWindowID=glutCreateWindow('python port of hackathon-slicer')
 
         # Set the display callback.  You can set other callbacks for keyboard and
         # mouse events.
         glutDisplayFunc(self.draw)
         #glutIdleFunc(self.draw)
-
 
     def init_pygame(self):
         import os
@@ -309,10 +308,18 @@ class Viewport:
         pygame.display.set_mode(self.windowsize, pygame.DOUBLEBUF | pygame.OPENGL | pygame.OPENGLBLIT)
         pygame.display.set_caption('python port of hackathon-slicer')
 
+        icon = pygame.image.load(os.path.join(self.installpath,'PhotonSlicer.gif'))
+        pygame.display.set_icon(icon)
+
     def display(self):
         glutMainLoop()
         return
 
+    def destroy(self):
+        if glutAvailable:
+            glutDestroyWindow(self.glutWindowID)
+        else:
+            pygame.quit()
 
     def buildShader(self,txt, type):
         #print ("buildShader",txt,type)

@@ -251,14 +251,17 @@ ap = argparse_logger(description=
                              "          PhotonSlicer.exe -s ./STLs/Cube.stl -p images -l 0.05    -> ./STLs/Cube/0001.png,..\n"
                              "          PhotonSlicer.exe -s ./STLs/Cube.stl -p ./sliced/ -l 0.05 -> ./sliced/0001.png,..\n"
                              "          PhotonSlicer.exe -s dialog -p dialog -g True -f False    -> full GUI is used\n"
-                             "          PhotonSlicer.exe -s ./Slices/*.png -p /home/myfile.photon\n"
+                             "          PhotonSlicer.exe -s ./Slices/*.png -p /home/myfile.photon -> convert png to photon\n"
+                             "          PhotonSlicer.exe -u true                                  -> show user interface\n"
+                             "          PhotonSlicer.exe -s ./STLs/monitor -l 0.05                -> wait for new file"
                              ,formatter_class=argparse.RawTextHelpFormatter)
 
 ap.add_argument("-s","--filename",
-                required=True,
+                #required=True,
                 help="name of (binary) stl or svg file to import OR\n"+
+                     "'path/*.png' to create photon file from presliced images OR\n"
                      "'dialog' for dialog to select stl file (only in GUI mode) OR\n"
-                     "path/*.png to create photon file from presliced images.")
+                     "'path/monitor' to wait for new stl/svg files.")
 ap.add_argument("-p","--photonfilename",
                 #type=str,
                 help="photon file name (ends with '.photon') OR \n"+
@@ -287,7 +290,7 @@ ap.add_argument("-l","--layerheight",
 ap.add_argument("-r", "--rescale", type=float, required=False,
                 help="scales model and offset")
 ap.add_argument("-t", "--exposure", required=False,
-                default=8.0,type=float,
+                default=12.0,type=float,
                 help="normal exposure time (sec)")
 ap.add_argument("-be", "--bottomexposure", required=False,
                 default=90,type=float,
@@ -304,6 +307,9 @@ ap.add_argument("-g", "--gui", required=False,
 ap.add_argument("-f", "--forceCPU", required=False,
                 default=True,type=is_bool,
                 help="force slicing with CPU instead of GPU/OpenGL")
+ap.add_argument("-u", "--ui", required=False,
+                default=False,type=is_bool,
+                help="ask for additional input using full GUI")
 ap.add_argument("-e", "--execute", required=False,
                 help="execute command when done \n"+
                      "'photon' will be replace with output filename \n"+
@@ -319,109 +325,163 @@ if not debug:
     sys.tracebacklimit = 0
     #pass
 
-# Check photonfilename is valid only now (that we have filename)
-sf=(args["filename"])
-is_valid_file(sf)
-filetype = args["filename"][-4:].lower()
 
-pf=(args["photonfilename"])
-if pf==None: pf="photon"
-is_valid_output(pf)
-#print ("pf",pf, outputpath, outputfile)
-#quit()
 
-# No raised errors, so we have a valid stl file, a valid output dir or output file (photon)
+# Check if we need to monitor folder
+# We only process first changed file!
+doLoop=True
+mpath=""
+while doLoop:
+    if args["filename"]:
+        if args["filename"].endswith("monitor"):
+            mpath=args["filename"][:-7]
+            args["filename"]=""
+    if mpath:
+        import FileMonitor
+        added=FileMonitor.FileMonitor(mpath).added
+        args["filename"]=os.path.join(mpath,added[0])
 
-# set values for optional arguments
-scale = float(args["rescale"]) if args["rescale"] else 1.0
-if scale==0.0: scale=1.0
-layerheight = args["layerheight"]#float(args["layerheight"])
-normalexposure = float(args["exposure"])
-bottomexposure = float(args["bottomexposure"])
-bottomlayers = int(args["bottomlayers"])
-offtime = float(args["offtime"])
-linkedcmd = args["execute"]
-forceCPU = args["forceCPU"]
+    # Check if we got a input name and gui was set to True
+    ui=(args["ui"])
+    uiCancel=False
+    if ui:
+        import PhotonSlicerGui
+        pg=PhotonSlicerGui.PhotonSlicerGui(args["filename"]) # for monitor we want to pass new file
+        gui_args=pg.args
+        if not pg.args==None:
+            args["filename"]        = gui_args['input']
+            args["photonfilename"]  = gui_args['output']
+            args["layerheight"]     = gui_args['layerheight']
+            args["offtime"]         = gui_args['offtime']
+            args["bottomlayers"]    = gui_args['bottomlayers']
+            args["bottomexposure"]  = gui_args["bottomexposure"]
+            args["exposure"]        = gui_args["normalexposure"]
+            args["forceCPU"]        = False
+            args["gui"]             = True
+            gui=True
+        else:
+            uiCancel=True
 
-# Some arguments do not work together
-if not forceCPU and not gui: #default is false, so user explicitly set it to True
-    print ("You cannot use opengl without gui.")
-    sys.exit()
-
-if filetype == ".png":
-    # we have presliced png files
-    P2P=Png2Photon(pngfolder=filename,
-                   photonfilename=outputfile,
-                   layerheight=layerheight,
-                   normalexposure=normalexposure,
-                   bottomexposure=bottomexposure,
-                   bottomlayers=bottomlayers,
-                   offtime=offtime,
-                   gui=gui
-                   )
-
-if filetype == ".svg":
-    if not isinstance(layerheight,float):
-        print ("With svg input you cannot use a file with layerheights.")
-        sys.exit()
-    S2I=Svg2Slices(svgfilename=filename,
-                   outputpath=outputpath,
-                   photonfilename=outputfile,
-                   layerheight=layerheight,
-                   scale=scale,
-                   normalexposure=normalexposure,
-                   bottomexposure=bottomexposure,
-                   bottomlayers=bottomlayers,
-                   offtime=offtime,
-                   gui=gui
-                   )
-
-if filetype == ".stl":
-    if forceCPU:
-        if not isinstance(layerheight,float):
-            print ("In CPU mode you cannot use a file with layerheights.")
+    # Cancel UI can cause no arguments (but if monitoring for new files, we do not want to quit and break monitoring loop)
+    if not uiCancel:
+        # Check photonfilename is valid only now (that we have filename)
+        sf=(args["filename"])
+        if not sf:
+            print ("Specify a stl/svg/png-folder to slice or use '-u True' for user interface.")
+            print ("")
+            print (ap.description)
+            print ("")
+            print ("Use --help for more help.")
             sys.exit()
-        S2I=Stl2Slices(stlfilename=filename,
-                   outputpath=outputpath,
-                   photonfilename=outputfile,
-                   layerheight=float(layerheight),
-                   scale=scale,
-                   normalexposure=normalexposure,
-                   bottomexposure=bottomexposure,
-                   bottomlayers=bottomlayers,
-                   offtime=offtime,
-                   gui=gui
-                   )
-    else: #use GPU/OpenGL
-        S2I=GL_Stl2Slices(stlfilename=filename,
-                   outputpath=outputpath,
-                   photonfilename=outputfile,
-                   layerheight=layerheight,
-                   scale=scale,
-                   normalexposure=normalexposure,
-                   bottomexposure=bottomexposure,
-                   bottomlayers=bottomlayers,
-                   offtime=offtime
-                   )
 
-import subprocess
-import platform
-import os
-def open_folder(path):
-    if platform.system() == 'Darwin':
-        subprocess.Popen(['open', path])
-        #os.startfile(path)
-    elif platform.system() == 'Linux':
-        subprocess.Popen(['xdg-open', path])
-        #os.startfile(path)
-    else: #platform.system() == 'Windows':
-        os.startfile(path)
-        #os.startfile(path)
+        is_valid_file(sf)
+        filetype = args["filename"][-4:].lower()
 
-if not linkedcmd==None:
-    linkedcmd=linkedcmd.replace("photon",outputfile)
-    os.system(linkedcmd)
+        pf=(args["photonfilename"])
+        if pf==None or pf.strip()=="": pf="photon"
+        is_valid_output(pf)
+        #print ("pf",pf, outputpath, outputfile)
+        #quit()
 
-    if linkedcmd=="folder":
-        folderpath=os.path.dirname(outputfile)
-        open_folder(path=folderpath)  # open current directory
+        # No raised errors, so we have a valid stl file, a valid output dir or output file (photon)
+
+        # set values for optional arguments
+        scale = float(args["rescale"]) if args["rescale"] else 1.0
+        if scale==0.0: scale=1.0
+        layerheight = args["layerheight"]#float(args["layerheight"])
+        normalexposure = float(args["exposure"])
+        bottomexposure = float(args["bottomexposure"])
+        bottomlayers = int(args["bottomlayers"])
+        offtime = float(args["offtime"])
+        linkedcmd = args["execute"]
+        forceCPU = args["forceCPU"]
+
+        # Some arguments do not work together
+        if not forceCPU and not gui: #default is false, so user explicitly set it to True
+            print ("You cannot use opengl without gui.")
+            sys.exit()
+
+        if filetype == ".png":
+            # we have presliced png files
+            P2P=Png2Photon(pngfolder=filename,
+                           photonfilename=outputfile,
+                           layerheight=layerheight,
+                           normalexposure=normalexposure,
+                           bottomexposure=bottomexposure,
+                           bottomlayers=bottomlayers,
+                           offtime=offtime,
+                           gui=gui
+                           )
+            P2P=None
+
+        if filetype == ".svg":
+            if not isinstance(layerheight,float):
+                print ("With svg input you cannot use a file with layerheights.")
+                sys.exit()
+            S2I=Svg2Slices(svgfilename=filename,
+                           outputpath=outputpath,
+                           photonfilename=outputfile,
+                           layerheight=layerheight,
+                           scale=scale,
+                           normalexposure=normalexposure,
+                           bottomexposure=bottomexposure,
+                           bottomlayers=bottomlayers,
+                           offtime=offtime,
+                           gui=gui
+                           )
+            S2I=None
+
+        if filetype == ".stl":
+            if forceCPU:
+                if not isinstance(layerheight,float):
+                    print ("In CPU mode you cannot use a file with layerheights.")
+                    sys.exit()
+                S2I=Stl2Slices(stlfilename=filename,
+                           outputpath=outputpath,
+                           photonfilename=outputfile,
+                           layerheight=float(layerheight),
+                           scale=scale,
+                           normalexposure=normalexposure,
+                           bottomexposure=bottomexposure,
+                           bottomlayers=bottomlayers,
+                           offtime=offtime,
+                           gui=gui
+                           )
+                S2I=None
+            else: #use GPU/OpenGL
+                S2I=GL_Stl2Slices(stlfilename=filename,
+                           outputpath=outputpath,
+                           photonfilename=outputfile,
+                           layerheight=layerheight,
+                           scale=scale,
+                           normalexposure=normalexposure,
+                           bottomexposure=bottomexposure,
+                           bottomlayers=bottomlayers,
+                           offtime=offtime
+                           )
+                S2I=None
+
+        import subprocess
+        import platform
+        import os
+        def open_folder(path):
+            if platform.system() == 'Darwin':
+                subprocess.Popen(['open', path])
+                #os.startfile(path)
+            elif platform.system() == 'Linux':
+                subprocess.Popen(['xdg-open', path])
+                #os.startfile(path)
+            else: #platform.system() == 'Windows':
+                os.startfile(path)
+                #os.startfile(path)
+
+        if not linkedcmd==None:
+            linkedcmd=linkedcmd.replace("photon",outputfile)
+            os.system(linkedcmd)
+
+            if linkedcmd=="folder":
+                folderpath=os.path.dirname(outputfile)
+                open_folder(path=folderpath)  # open current directory
+
+    # If we have a monitor path, we continue loop
+    doLoop=(mpath!="")

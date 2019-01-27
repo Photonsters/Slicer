@@ -1,0 +1,7 @@
+D:/nardj/PhotonSlicer/STLs
+D:/nardj/PhotonSlicer/STLs
+0.05
+6.5
+8
+90.0
+12.0

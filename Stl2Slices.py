@@ -272,7 +272,7 @@ class Stl2Slices:
         if gui:
             import tkinter as tk
             from tkinter import ttk
-            # Construct window            
+            # Construct window
             self.popup = tk.Tk()#tk.Toplevel()
             self.popup.geometry('240x32')
             # Set window icon
@@ -308,7 +308,7 @@ class Stl2Slices:
            sizestr="("+str(int(size[0]*0.047))+"x"+str(int(size[2]*0.047))+")"
            areastr="(65x115)"
            errmsg="Model is too big "+sizestr+"for build area "+areastr+". Maybe try another orientation, use the scale argument (-s or --scale) or cut up the model."
-           if not self.gui: 
+           if not self.gui:
               print (errmsg)
            else:
               sys.tracebacklimit = None
@@ -387,7 +387,7 @@ class Stl2Slices:
             """
 
             # Traverse all triangles
-            for pidx in slicepointindices[sliceNr]:                
+            for pidx in slicepointindices[sliceNr]:
                 p0 = points[pidx + 0]
                 p1 = points[pidx + 1]
                 p2 = points[pidx + 2]
@@ -397,13 +397,13 @@ class Stl2Slices:
                 # Draw filled poly, fillConvexPoly is much faster than fillPoly, but poly should be convex...
                 if polypoints:
                     # if we do fill on all lines, do we need fillConvexPoly?
-                    cv2.fillConvexPoly(img, numpy.array([polypoints], dtype='int32'), color=contourColor)                    
+                    cv2.fillConvexPoly(img, numpy.array([polypoints], dtype='int32'), color=contourColor)
                     # Add points for which to floodfillpoints using normal but only if normal not along y
                     if not (n2d[0] == 0 and n2d[1] == 0):
                         nrpoints = len(polypoints)
                         for idx in range(nrpoints):
                             pfrom = polypoints[idx]
-                            pto = polypoints[(idx + 1) % nrpoints]                            
+                            pto = polypoints[(idx + 1) % nrpoints]
                             pmid = ((pfrom[0] + pto[0]) / 2, (pfrom[1] + pto[1]) / 2)
                             pfill = (int((pmid[0] - n2d[0])), int((pmid[1] - n2d[1])))
                             # Check if point inside triangle(s) - https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
@@ -436,7 +436,7 @@ class Stl2Slices:
                             nors.append(n2d)
                             ps.append([p0,p1,p2])
                             """
-                            
+
             # Floodfill all points
             tester = img.copy()
             nrTests = 0
@@ -453,14 +453,14 @@ class Stl2Slices:
 
             #for idx,fillPoint in enumerate(fillpoints):
             """
-            for y in range(0,2560):            
+            for y in range(0,2560):
                 oldcol=0
                 inShape=False
                 for x in range (0,1440):
                     col=1#img[y,x]
-                    if oldcol!=col: 
+                    if oldcol!=col:
                         inShape!=inShape
-                        col=oldcol    
+                        col=oldcol
                     if inShape:
                         img[y,x]=innerColor
             """
@@ -574,6 +574,6 @@ class Stl2Slices:
             photonfile.replaceBitmaps(rlestack)
             photonfile.writeFile(photonfilename)
 
+        if self.gui:
+            self.popup.destroy()
         if not self.gui: print("Elapsed: ", "%.2f" % (time.time() - t1), "secs")
-
-
