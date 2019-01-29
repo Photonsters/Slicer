@@ -1,0 +1,9 @@
+# cat requirements.txt 
+# USAGE: pip install -r requirements.txt 
+opencv-python
+numpy
+cpython
+cython
+PyOpenGL
+pygame
+cx_Freeze
