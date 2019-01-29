@@ -17,7 +17,7 @@ import cv2
 
 #Test if glutInit available, if not we want to use pygame
 #Even if bool(glutInit) wil return True the call on glutInit might still fail
-glutAvailable=True
+glutAvailable=False #True
 try:
     glutInit()
 except Exception:

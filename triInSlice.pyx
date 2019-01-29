@@ -1,7 +1,7 @@
 cimport cython
 
-from cpython cimport array
-import array
+#from cpython cimport array
+#import array
 import numpy as numpy
 cimport numpy as numpy
 DTYPE = numpy.float64
