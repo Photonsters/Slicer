@@ -6,8 +6,8 @@ The PhotonSlicer Converts STL (binary) files to Images or PhotonFile. It is prog
 
 ## Status
 
-Not yet ready:
-- Real life test with the produced photon files have to be done.
+Operational:
+- The included produced photon files have been printed successfully.
 
 ---
 
