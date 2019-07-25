@@ -246,31 +246,40 @@ class GL_Stl2Slices:
 
             # First set slices for bottom layers
             relY_bottom=bottomlayers*bottomlayerheight
-            relY_bottom1000=1000*relY_bottom
-            for y in range(0,int(relY_bottom*1000),int(bottomlayerheight*1000)):
-                sliceheights.append(y/1000)
+            relY_bottom1000=1000000*relY_bottom
+            for y in range(0,int(relY_bottom*1000000),int(bottomlayerheight*1000000)):
+                sliceheights.append(y/1000000)
                 exposures.append(bottomexposure)
 
+            #print ("AAA")    
             # Process all lines, converting layerheight to a relative layer height
             (prevRelY,prevSliceH,prevExposure) = (bottomlayers,bottomlayerheight,bottomexposure)
             for line in lines[3:]:
                 nrs=line.split()
                 (relY, sliceH, exposure) = (float(nrs[0]),float(nrs[1])/self.modelheight,float(nrs[2])) # convert layerheight to a relative layer height
-                for y in range(int(prevRelY*1000),int(relY*1000),int(prevSliceH*1000)):
+                #print ("---")
+                #print ("line",line)
+                #print ((prevRelY,prevSliceH,prevExposure))
+                #print (relY, sliceH, exposure)
+                #print (prevSliceH,prevSliceH*1000000,int(prevSliceH*1000000.0))
+                for y in range(int(prevRelY*1000000),int(relY*1000000),int(prevSliceH*1000000)):
                     if y>relY_bottom1000: # ignore settings/slices below bottomlayers
-                        sliceheights.append(y/1000)
+                        sliceheights.append(y/1000000)
                         exposures.append(prevExposure)
                 (prevRelY,prevSliceH,prevExposure)=(relY, sliceH, exposure)
             # Add last height/exposure
+            #print ("BBB")                
             sliceheights.append(relY)
             exposures.append(exposure)
+            #for h,e in zip(sliceheights,exposures):
+            #    print ("h,e:",h,e)
 
         # b) If not file we received sliceheight in mm and use this to make slices
         else:
-            microns = layerheight*1000 #document.getElementById("height").value;
+            microns = layerheight*1000000 #document.getElementById("height").value;
             bounds = self.viewport.getBounds()
             zrange_mm=(bounds['zmax']-bounds['zmin']) / self.viewport.printer.getGLscale()
-            count=math.ceil(zrange_mm * 1000 / microns);
+            count=math.ceil(zrange_mm * 1000000 / microns);
             for i in range(0,count):
                 relheight=i/count
                 sliceheights.append(relheight)
@@ -310,7 +319,7 @@ class GL_Stl2Slices:
             if adaptiveLayers:
                 #nLayers=photonfile.nrLayers()
                 for layerNr,(layerheight,exposure) in enumerate(zip(sliceheights,exposures)):
-                   photonfile.LayerDefs[layerNr]["Layer height (mm)"] = PhotonFile.float_to_bytes(layerheight*self.modelheight)
+                   photonfile.LayerDefs[layerNr]["Layer height (mm)"] = PhotonFile.float_to_bytes(round(layerheight*self.modelheight,2))
                    photonfile.LayerDefs[layerNr]["Exp. time (s)"] = PhotonFile.float_to_bytes(exposure)
 
             photonfile.writeFile(photonfilename)
