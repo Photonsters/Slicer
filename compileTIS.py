@@ -7,12 +7,16 @@
 # "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
 #   python compileTIS.py build_ext --inplace
 
-from distutils.core import setup
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
+from distutils.core import setup, Extension
 from Cython.Build import cythonize
 import numpy
 
+
 setup(
-    name="Fast check if tri between two heights (in slice).",
-    ext_modules=cythonize("triInSlice.pyx"),
-    include_dirs=[numpy.get_include()]
+    ext_modules=[
+        Extension("triInSlice", ["triInSlice.c"],
+                  include_dirs=[numpy.get_include()]),
+    ],
 )
