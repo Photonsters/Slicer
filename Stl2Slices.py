@@ -307,7 +307,7 @@ class Stl2Slices:
            size=(self.cmax[0]-self.cmin[0],self.cmax[1]-self.cmin[1],self.cmax[2]-self.cmin[2])
            sizestr="("+str(int(size[0]*0.047))+"x"+str(int(size[2]*0.047))+")"
            areastr="(65x115)"
-           errmsg="Model is too big "+sizestr+"for build area "+areastr+". Maybe try another orientation, use the scale argument (-s or --scale) or cut up the model."
+           errmsg="Model is too big "+sizestr+"for build area "+areastr+". Maybe try another orientation, use the scale argument (-r or --rescale) or cut up the model."
            if not self.gui: 
               print (errmsg)
            else:

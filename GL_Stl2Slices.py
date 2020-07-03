@@ -186,7 +186,7 @@ class GL_Stl2Slices:
         if size[0]>65 or size[1]>115:
            sizestr="("+str(int(size[0]))+"x"+str(int(size[2]))+")"
            areastr="(65x115)"
-           errmsg="Model is too big "+sizestr+" for build area "+areastr+". Maybe try another orientation, use the scale argument (-s or --scale) or cut up the model."
+           errmsg="Model is too big "+sizestr+" for build area "+areastr+". Maybe try another orientation, use the scale argument (-r or --rescale) or cut up the model."
            if not self.gui: 
               print (errmsg)
            else:
